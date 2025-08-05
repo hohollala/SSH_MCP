@@ -14,8 +14,9 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
 
         .container {
@@ -25,30 +26,56 @@
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #2d3748;
+            padding: 3rem 0;
             margin-bottom: 2rem;
-            border-radius: 10px;
+            border-radius: 20px;
             text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.1;
+            z-index: -1;
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 1.3rem;
+            color: #718096;
+            font-weight: 500;
         }
 
         .nav {
-            background: white;
-            padding: 1rem;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
         }
 
         .nav ul {
@@ -56,168 +83,339 @@
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
+            justify-content: center;
         }
 
         .nav a {
             color: #667eea;
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: rgba(102, 126, 234, 0.1);
+            font-weight: 500;
         }
 
         .nav a:hover {
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .section {
-            background: white;
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
         }
 
         h2 {
             color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
 
         h3 {
-            color: #495057;
-            margin: 1.5rem 0 1rem 0;
-            font-size: 1.3rem;
+            color: #4a5568;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
         }
 
         .code-block {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
+            background: #2d3748;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
             overflow-x: auto;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .code-block::before {
+            content: '💻';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #2d3748;
+            padding: 0 10px;
+            font-size: 0.8rem;
         }
 
         .json-code {
-            background: #2d3748;
+            background: #1a202c;
             color: #e2e8f0;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
             overflow-x: auto;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .json-code::before {
+            content: '📄';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #1a202c;
+            padding: 0 10px;
+            font-size: 0.8rem;
         }
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
         }
 
         .feature-card {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
         .feature-card h4 {
             color: #667eea;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         .step {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 5px 5px 0;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
         }
 
         .step-number {
-            background: #2196f3;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin-right: 1rem;
+            margin-right: 1.5rem;
+            box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
         }
 
         .warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .warning::before {
+            content: '⚠️';
+            position: absolute;
+            top: -10px;
+            left: 20px;
             background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
+            padding: 0 10px;
+            font-size: 1rem;
         }
 
         .success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .success::before {
+            content: '✅';
+            position: absolute;
+            top: -10px;
+            left: 20px;
             background: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
+            padding: 0 10px;
+            font-size: 1rem;
         }
 
         .tool-card {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
         .tool-name {
             color: #667eea;
             font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .tool-name::before {
+            content: '🔧';
+            margin-right: 0.5rem;
         }
 
         .param-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .param-table th,
         .param-table td {
-            border: 1px solid #dee2e6;
-            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
             text-align: left;
         }
 
         .param-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .param-table tr:nth-child(even) {
             background: #f8f9fa;
-            font-weight: bold;
+        }
+
+        .param-table tr:hover {
+            background: #e3f2fd;
         }
 
         .required {
             color: #dc3545;
             font-weight: bold;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
         }
 
         .optional {
             color: #6c757d;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+        }
+
+        .install-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .install-method {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .install-method:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .install-method h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .method-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
         }
 
         footer {
             text-align: center;
-            padding: 2rem;
-            color: #6c757d;
-            border-top: 1px solid #e9ecef;
+            padding: 3rem;
+            color: #718096;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             margin-top: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #764ba2;
         }
 
         @media (max-width: 768px) {
@@ -226,7 +424,7 @@
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             
             .nav ul {
@@ -234,6 +432,10 @@
             }
             
             .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .install-methods {
                 grid-template-columns: 1fr;
             }
         }
@@ -292,41 +494,85 @@
         <section id="installation" class="section">
             <h2>📦 설치</h2>
             
-            <h3>빠른 설치 (권장)</h3>
-            <div class="code-block">
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">🚀</div>
+                    <h4>빠른 설치 (권장)</h4>
+                    <p>가장 간단하고 빠른 설치 방법입니다.</p>
+                    <div class="code-block">
 pip install ssh-mcp-server
-            </div>
+                    </div>
+                    <div class="success">
+                        <strong>✅ 완료!</strong> 설치가 완료되었습니다.
+                    </div>
+                </div>
 
-            <h3>가상 환경 사용 (권장)</h3>
-            <div class="step">
-                <span class="step-number">1</span>
-                <strong>가상 환경 생성:</strong>
-                <div class="code-block">
+                <div class="install-method">
+                    <div class="method-icon">🔧</div>
+                    <h4>가상 환경 설치</h4>
+                    <p>격리된 환경에서 안전하게 설치합니다.</p>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <strong>가상 환경 생성:</strong>
+                        <div class="code-block">
 python -m venv ssh-mcp-env
 source ssh-mcp-env/bin/activate  # Linux/macOS
 # 또는
 ssh-mcp-env\Scripts\activate     # Windows
-                </div>
-            </div>
-
-            <div class="step">
-                <span class="step-number">2</span>
-                <strong>SSH MCP Server 설치:</strong>
-                <div class="code-block">
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <strong>패키지 설치:</strong>
+                        <div class="code-block">
 pip install ssh-mcp-server
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">📦</div>
+                    <h4>소스에서 설치</h4>
+                    <p>최신 기능을 사용하려면 소스에서 설치하세요.</p>
+                    <div class="code-block">
+git clone https://github.com/ssh-mcp-server/ssh-mcp-server.git
+cd ssh-mcp-server
+pip install -e .
+                    </div>
                 </div>
             </div>
 
-            <div class="step">
-                <span class="step-number">3</span>
-                <strong>설치 확인:</strong>
-                <div class="code-block">
+            <h3>설치 확인</h3>
+            <div class="code-block">
+# 버전 확인
 ssh-mcp-server --version
-                </div>
+
+# 기본 기능 테스트
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
             </div>
 
             <div class="success">
-                <strong>✅ 설치 완료!</strong> 이제 MCP 클라이언트에서 SSH MCP Server를 사용할 수 있습니다.
+                <strong>🎉 설치 완료!</strong> 이제 MCP 클라이언트에서 SSH MCP Server를 사용할 수 있습니다.
+            </div>
+
+            <h3>시스템 요구사항</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🐍 Python</h4>
+                    <p>Python 3.8 이상</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💾 메모리</h4>
+                    <p>최소 256MB RAM</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💿 디스크</h4>
+                    <p>최소 50MB 여유 공간</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🌐 네트워크</h4>
+                    <p>인터넷 연결 (설치용)</p>
+                </div>
             </div>
         </section>
 
@@ -334,10 +580,13 @@ ssh-mcp-server --version
             <h2>⚙️ 설정</h2>
 
             <h3>MCP 클라이언트 설정</h3>
-
-            <h4>Claude Code 설정</h4>
-            <p>Claude Code의 MCP 설정 파일에 다음을 추가하세요:</p>
-            <div class="json-code">
+            
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">💻</div>
+                    <h4>Claude Code 설정</h4>
+                    <p>Claude Code의 MCP 설정 파일에 다음을 추가하세요:</p>
+                    <div class="json-code">
 {
   "mcpServers": {
     "ssh-server": {
@@ -350,10 +599,14 @@ ssh-mcp-server --version
     }
   }
 }
-            </div>
+                    </div>
+                </div>
 
-            <h4>Gemini CLI 설정</h4>
-            <div class="json-code">
+                <div class="install-method">
+                    <div class="method-icon">🤖</div>
+                    <h4>Gemini CLI 설정</h4>
+                    <p>Gemini CLI 설정 파일에 다음을 추가하세요:</p>
+                    <div class="json-code">
 {
   "mcpServers": {
     "ssh-server": {
@@ -364,10 +617,14 @@ ssh-mcp-server --version
     }
   }
 }
-            </div>
+                    </div>
+                </div>
 
-            <h4>Claude Desktop 설정</h4>
-            <div class="json-code">
+                <div class="install-method">
+                    <div class="method-icon">🖥️</div>
+                    <h4>Claude Desktop 설정</h4>
+                    <p>Claude Desktop 설정 파일에 다음을 추가하세요:</p>
+                    <div class="json-code">
 {
   "mcpServers": {
     "ssh-server": {
@@ -378,15 +635,22 @@ ssh-mcp-server --version
     }
   }
 }
+                    </div>
+                </div>
             </div>
 
-            <h3>환경 변수</h3>
+            <h3>환경 변수 설정</h3>
+            <div class="warning">
+                <strong>💡 팁:</strong> 환경 변수를 설정하면 SSH MCP Server의 동작을 세밀하게 제어할 수 있습니다.
+            </div>
+            
             <table class="param-table">
                 <thead>
                     <tr>
                         <th>변수명</th>
                         <th>설명</th>
                         <th>기본값</th>
+                        <th>권장값</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -394,24 +658,55 @@ ssh-mcp-server --version
                         <td><code>SSH_MCP_DEBUG</code></td>
                         <td>디버그 로깅 활성화</td>
                         <td>false</td>
+                        <td>개발시: true</td>
                     </tr>
                     <tr>
                         <td><code>SSH_MCP_TIMEOUT</code></td>
                         <td>연결 타임아웃 (초)</td>
                         <td>30</td>
+                        <td>느린 네트워크: 60</td>
                     </tr>
                     <tr>
                         <td><code>SSH_MCP_MAX_CONNECTIONS</code></td>
                         <td>최대 동시 연결 수</td>
                         <td>10</td>
+                        <td>제한된 리소스: 5</td>
                     </tr>
                     <tr>
                         <td><code>SSH_MCP_LOG_LEVEL</code></td>
                         <td>로그 레벨</td>
                         <td>INFO</td>
+                        <td>문제 해결: DEBUG</td>
                     </tr>
                 </tbody>
             </table>
+
+            <h3>설정 파일 생성 (선택사항)</h3>
+            <div class="code-block">
+# 설정 디렉토리 생성
+mkdir -p ~/.ssh-mcp-server
+
+# 설정 파일 생성
+cat > ~/.ssh-mcp-server/config.json << EOF
+{
+  "server": {
+    "max_connections": 10,
+    "default_timeout": 30,
+    "debug": false,
+    "log_level": "INFO"
+  },
+  "ssh": {
+    "host_key_policy": "auto_add",
+    "compression": true,
+    "keepalive_interval": 30
+  }
+}
+EOF
+            </div>
+
+            <div class="success">
+                <strong>✅ 설정 완료!</strong> 이제 SSH MCP Server를 사용할 준비가 되었습니다.
+            </div>
         </section>
 
         <section id="tools" class="section">
@@ -728,9 +1023,13 @@ ssh-mcp-server --version
             </div>
 
             <h3>인증 방법별 예제</h3>
-
-            <h4>SSH 키 인증</h4>
-            <div class="json-code">
+            
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">🔑</div>
+                    <h4>SSH 키 인증</h4>
+                    <p>가장 안전한 인증 방법입니다.</p>
+                    <div class="json-code">
 {
   "name": "ssh_connect",
   "arguments": {
@@ -740,10 +1039,14 @@ ssh-mcp-server --version
     "key_path": "~/.ssh/id_rsa"
   }
 }
-            </div>
+                    </div>
+                </div>
 
-            <h4>비밀번호 인증</h4>
-            <div class="json-code">
+                <div class="install-method">
+                    <div class="method-icon">🔐</div>
+                    <h4>비밀번호 인증</h4>
+                    <p>간단하지만 보안에 주의하세요.</p>
+                    <div class="json-code">
 {
   "name": "ssh_connect",
   "arguments": {
@@ -753,10 +1056,14 @@ ssh-mcp-server --version
     "password": "mypassword"
   }
 }
-            </div>
+                    </div>
+                </div>
 
-            <h4>SSH 에이전트 인증</h4>
-            <div class="json-code">
+                <div class="install-method">
+                    <div class="method-icon">🤖</div>
+                    <h4>SSH 에이전트 인증</h4>
+                    <p>시스템 SSH 에이전트를 사용합니다.</p>
+                    <div class="json-code">
 {
   "name": "ssh_connect",
   "arguments": {
@@ -765,6 +1072,56 @@ ssh-mcp-server --version
     "auth_method": "agent"
   }
 }
+                    </div>
+                </div>
+            </div>
+
+            <h3>실제 사용 시나리오</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔧 서버 관리</h4>
+                    <p>시스템 모니터링, 로그 확인, 서비스 관리</p>
+                    <div class="code-block">
+# 시스템 상태 확인
+ssh_execute → "top -n 1"
+ssh_execute → "df -h"
+ssh_execute → "systemctl status nginx"
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>📁 파일 관리</h4>
+                    <p>원격 파일 읽기, 쓰기, 디렉토리 탐색</p>
+                    <div class="code-block">
+# 파일 작업
+ssh_list_directory → "/home/user"
+ssh_read_file → "/etc/nginx/nginx.conf"
+ssh_write_file → "/tmp/backup.txt"
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🚀 배포 자동화</h4>
+                    <p>코드 배포, 설정 업데이트, 서비스 재시작</p>
+                    <div class="code-block">
+# 배포 프로세스
+ssh_execute → "git pull origin main"
+ssh_execute → "npm install"
+ssh_execute → "pm2 restart app"
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🔍 문제 해결</h4>
+                    <p>로그 분석, 시스템 진단, 오류 추적</p>
+                    <div class="code-block">
+# 문제 진단
+ssh_execute → "tail -n 100 /var/log/error.log"
+ssh_execute → "netstat -tulpn"
+ssh_execute → "ps aux | grep node"
+                    </div>
+                </div>
             </div>
 
             <h3>개발 워크플로우 예제</h3>
@@ -787,6 +1144,10 @@ ssh_write_file → 결과 저장
 # 6. 연결 정리
 ssh_disconnect → 연결 종료
             </div>
+
+            <div class="success">
+                <strong>💡 팁:</strong> 실제 사용시에는 connection_id를 변수에 저장하여 재사용하는 것이 좋습니다.
+            </div>
         </section>
 
         <section id="troubleshooting" class="section">
@@ -794,40 +1155,64 @@ ssh_disconnect → 연결 종료
 
             <h3>일반적인 문제들</h3>
 
-            <div class="warning">
-                <h4>⚠️ "SSH connection failed: Connection timed out"</h4>
-                <p><strong>원인:</strong> 네트워크 연결 문제, 방화벽 차단, 잘못된 호스트명</p>
-                <p><strong>해결책:</strong></p>
-                <ul>
-                    <li>네트워크 연결 확인: <code>ping hostname</code></li>
-                    <li>SSH 포트 확인: <code>telnet hostname 22</code></li>
-                    <li>타임아웃 증가: <code>"timeout": 60</code></li>
-                </ul>
-            </div>
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">⏰</div>
+                    <h4>연결 타임아웃</h4>
+                    <p><strong>오류:</strong> "SSH connection failed: Connection timed out"</p>
+                    <p><strong>원인:</strong> 네트워크 연결 문제, 방화벽 차단, 잘못된 호스트명</p>
+                    <div class="code-block">
+# 네트워크 연결 확인
+ping hostname
 
-            <div class="warning">
-                <h4>⚠️ "SSH authentication failed"</h4>
-                <p><strong>원인:</strong> 잘못된 인증 정보, SSH 키 권한 문제</p>
-                <p><strong>해결책:</strong></p>
-                <ul>
-                    <li>SSH 키 권한 확인: <code>chmod 600 ~/.ssh/id_rsa</code></li>
-                    <li>SSH 에이전트 확인: <code>ssh-add -l</code></li>
-                    <li>수동 SSH 테스트: <code>ssh user@hostname</code></li>
-                </ul>
-            </div>
+# SSH 포트 확인
+telnet hostname 22
 
-            <div class="warning">
-                <h4>⚠️ "Command execution failed"</h4>
-                <p><strong>원인:</strong> 권한 부족, 명령어 오류, 타임아웃</p>
-                <p><strong>해결책:</strong></p>
-                <ul>
-                    <li>권한 확인: <code>whoami</code> 명령으로 사용자 확인</li>
-                    <li>sudo 사용: 필요시 <code>sudo</code> 명령 사용</li>
-                    <li>타임아웃 증가: <code>"timeout": 120</code></li>
-                </ul>
+# 타임아웃 증가 설정
+"timeout": 60
+                    </div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">🔐</div>
+                    <h4>인증 실패</h4>
+                    <p><strong>오류:</strong> "SSH authentication failed"</p>
+                    <p><strong>원인:</strong> 잘못된 인증 정보, SSH 키 권한 문제</p>
+                    <div class="code-block">
+# SSH 키 권한 확인
+chmod 600 ~/.ssh/id_rsa
+
+# SSH 에이전트 확인
+ssh-add -l
+
+# 수동 SSH 테스트
+ssh user@hostname
+                    </div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">❌</div>
+                    <h4>명령 실행 실패</h4>
+                    <p><strong>오류:</strong> "Command execution failed"</p>
+                    <p><strong>원인:</strong> 권한 부족, 명령어 오류, 타임아웃</p>
+                    <div class="code-block">
+# 권한 확인
+whoami
+
+# sudo 사용 (필요시)
+sudo command
+
+# 타임아웃 증가
+"timeout": 120
+                    </div>
+                </div>
             </div>
 
             <h3>디버그 모드 활성화</h3>
+            <div class="warning">
+                <strong>🔍 디버그 모드:</strong> 문제 해결을 위해 디버그 로깅을 활성화할 수 있습니다.
+            </div>
+            
             <div class="code-block">
 # 환경 변수로 디버그 활성화
 export SSH_MCP_DEBUG=true
@@ -848,15 +1233,87 @@ export SSH_MCP_LOG_LEVEL=DEBUG
             </div>
 
             <h3>연결 테스트</h3>
-            <div class="code-block">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔍 기본 테스트</h4>
+                    <div class="code-block">
 # SSH MCP Server 버전 확인
 ssh-mcp-server --version
 
 # 기본 기능 테스트
 echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
-
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🌐 네트워크 테스트</h4>
+                    <div class="code-block">
 # SSH 연결 테스트
 ssh user@hostname
+
+# 포트 확인
+telnet hostname 22
+
+# 네트워크 연결 확인
+ping hostname
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🔧 설정 확인</h4>
+                    <div class="code-block">
+# SSH 키 확인
+ls -la ~/.ssh/
+
+# SSH 에이전트 확인
+ssh-add -l
+
+# SSH 설정 확인
+cat ~/.ssh/config
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>📊 로그 확인</h4>
+                    <div class="code-block">
+# 시스템 로그 확인
+tail -f /var/log/auth.log
+
+# SSH 서버 로그 확인
+journalctl -u ssh
+                    </div>
+                </div>
+            </div>
+
+            <h3>문제 해결 체크리스트</h3>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>기본 확인:</strong>
+                <ul>
+                    <li>SSH MCP Server가 설치되어 있는가?</li>
+                    <li>MCP 클라이언트 설정이 올바른가?</li>
+                    <li>네트워크 연결이 정상적인가?</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>인증 확인:</strong>
+                <ul>
+                    <li>SSH 키 권한이 올바른가? (600)</li>
+                    <li>SSH 에이전트에 키가 로드되어 있는가?</li>
+                    <li>수동 SSH 연결이 가능한가?</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>서버 확인:</strong>
+                <ul>
+                    <li>SSH 서버가 실행 중인가?</li>
+                    <li>방화벽이 SSH 포트를 차단하고 있지 않은가?</li>
+                    <li>사용자 계정이 활성화되어 있는가?</li>
+                </ul>
             </div>
 
             <div class="success">
@@ -892,19 +1349,140 @@ ssh user@hostname
         // 코드 블록 복사 기능
         document.querySelectorAll('.code-block, .json-code').forEach(block => {
             block.addEventListener('click', function() {
-                navigator.clipboard.writeText(this.textContent.trim()).then(() => {
+                const text = this.textContent.trim();
+                navigator.clipboard.writeText(text).then(() => {
+                    // 복사 성공 표시
                     const originalBg = this.style.backgroundColor;
                     this.style.backgroundColor = '#d4edda';
+                    this.style.boxShadow = '0 0 20px rgba(40, 167, 69, 0.5)';
+                    
+                    // 복사 완료 메시지
+                    const copyMsg = document.createElement('div');
+                    copyMsg.textContent = '✅ 복사 완료!';
+                    copyMsg.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: #28a745;
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: 5px;
+                        font-size: 0.8rem;
+                        z-index: 1000;
+                        pointer-events: none;
+                    `;
+                    this.style.position = 'relative';
+                    this.appendChild(copyMsg);
+                    
                     setTimeout(() => {
                         this.style.backgroundColor = originalBg;
-                    }, 200);
+                        this.style.boxShadow = '';
+                        copyMsg.remove();
+                    }, 1000);
+                }).catch(err => {
+                    console.error('복사 실패:', err);
+                    // 대체 방법으로 복사
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // 성공 표시
+                    this.style.backgroundColor = '#d4edda';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 500);
                 });
             });
             
             // 마우스 오버 시 복사 힌트
             block.title = '클릭하여 복사';
             block.style.cursor = 'pointer';
+            
+            // 호버 효과
+            block.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            
+            block.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
         });
+
+        // 네비게이션 활성 상태 표시
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 스크롤 진행률 표시
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        `;
+        document.body.appendChild(progressBar);
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / scrollHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+        });
+
+        // 섹션 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+
+        // 첫 번째 섹션은 즉시 표시
+        if (sections.length > 0) {
+            sections[0].style.opacity = '1';
+            sections[0].style.transform = 'translateY(0)';
+        }
     </script>
 </body>
 </html>
