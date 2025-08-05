@@ -136,16 +136,21 @@
             line-height: 1.8;
         }
 
+        .code-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
         .code-block {
             background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
             color: #e2e8f0;
             padding: 1.5rem;
+            padding-right: 4rem;
             border-radius: 10px;
             font-family: 'Courier New', monospace;
             font-size: 0.9rem;
             line-height: 1.6;
             overflow-x: auto;
-            margin: 1rem 0;
             border: 1px solid #4a5568;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -154,14 +159,56 @@
             background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
             color: #e2e8f0;
             padding: 1.5rem;
+            padding-right: 4rem;
             border-radius: 10px;
             font-family: 'Courier New', monospace;
             font-size: 0.9rem;
             line-height: 1.6;
             overflow-x: auto;
-            margin: 1rem 0;
             border: 1px solid #4a5568;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+        }
+
+        .copy-btn.copied::after {
+            content: '✓';
+            position: absolute;
+            font-size: 1.2rem;
+            font-weight: bold;
         }
 
         .install-methods {
@@ -339,6 +386,12 @@
             .feature-grid {
                 grid-template-columns: 1fr;
             }
+
+            .copy-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -405,40 +458,45 @@
             <div class="step">
                 <span class="step-number">1</span>
                 <strong>프로젝트 다운로드</strong>
-                <div class="code-block">
-git clone https://github.com/hohollala/SSH_MCP.git
+                <div class="code-container">
+                    <div class="code-block">git clone https://github.com/hohollala/SSH_MCP.git</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'git clone https://github.com/hohollala/SSH_MCP.git')" title="복사">📋</button>
                 </div>
             </div>
 
             <div class="step">
                 <span class="step-number">2</span>
                 <strong>프로젝트 폴더로 이동</strong>
-                <div class="code-block">
-cd SSH_MCP
+                <div class="code-container">
+                    <div class="code-block">cd SSH_MCP</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'cd SSH_MCP')" title="복사">📋</button>
                 </div>
             </div>
 
             <div class="step">
                 <span class="step-number">3</span>
                 <strong>의존성 설치</strong>
-                <div class="code-block">
-npm install
+                <div class="code-container">
+                    <div class="code-block">npm install</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'npm install')" title="복사">📋</button>
                 </div>
             </div>
 
             <div class="step">
                 <span class="step-number">4</span>
                 <strong>프로젝트 빌드</strong>
-                <div class="code-block">
-npm run build
+                <div class="code-container">
+                    <div class="code-block">npm run build</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'npm run build')" title="복사">📋</button>
                 </div>
             </div>
 
             <div class="step">
                 <span class="step-number">5</span>
                 <strong>글로벌 설치 (선택사항)</strong>
-                <div class="code-block">
-npm install -g .
+                <div class="code-container">
+                    <div class="code-block">npm install -g .</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'npm install -g .')" title="복사">📋</button>
                 </div>
             </div>
 
@@ -450,37 +508,60 @@ npm install -g .
                 <p>사용자 전체에서 사용 가능하도록 등록합니다.</p>
                 
                 <h5>Windows (PowerShell)</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s user -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s user -- node "$PWD/dist/index.js"</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s user -- node \"$PWD/dist/index.js\"')" title="복사">📋</button>
                 </div>
                 
                 <h5>Windows (CMD)</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s user -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s user -- node "[설치경로]/dist/index.js"</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s user -- node \"[설치경로]/dist/index.js\"')" title="복사">📋</button>
                 </div>
                 
                 <h5>macOS/Linux</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s user -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s user -- node $(pwd)/dist/index.js</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s user -- node $(pwd)/dist/index.js')" title="복사">📋</button>
                 </div>
                 
                 <h4>📁 워크스페이스 레벨 등록</h4>
                 <p>현재 프로젝트에서만 사용하도록 등록합니다.</p>
                 
                 <h5>Windows (PowerShell)</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s workspace -- node "$PWD/dist/index.js"</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s workspace -- node \"$PWD/dist/index.js\"')" title="복사">📋</button>
                 </div>
                 
                 <h5>Windows (CMD)</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s workspace -- node "[설치경로]/dist/index.js"</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s workspace -- node \"[설치경로]/dist/index.js\"')" title="복사">📋</button>
                 </div>
                 
                 <h5>macOS/Linux</h5>
-                <div class="code-block">
-claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                <div class="code-container">
+                    <div class="code-block">claude mcp add ssh-mcp -s workspace -- node $(pwd)/dist/index.js</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'claude mcp add ssh-mcp -s workspace -- node $(pwd)/dist/index.js')" title="복사">📋</button>
                 </div>
+            </div>
+
+            <h4>📝 수동 설정: ~/.claude.json 파일 편집</h4>
+            <p>Claude Code 설정 파일을 직접 편집하여 MCP 서버를 추가할 수 있습니다.</p>
+            <p><strong>Windows:</strong> C:\Users\사용자명\.claude.json</p>
+            <div class="code-container">
+                <div class="json-code">{
+  "mcpServers": {
+    "ssh-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [ "[설치폴더경로]/dist/index.js" ],
+      "env": {}
+    }
+  }
+}</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '{\n  \"mcpServers\": {\n    \"ssh-mcp\": {\n      \"type\": \"stdio\",\n      \"command\": \"node\",\n      \"args\": [ \"[설치폴더경로]/dist/index.js\" ],\n      \"env\": {}\n    }\n  }\n}')" title="복사">📋</button>
             </div>
 
             <div class="success">
@@ -488,15 +569,16 @@ claude mcp add ssh-mcp -s workspace -- node dist/index.js
             </div>
 
             <h3>설치 확인</h3>
-            <div class="code-block">
-# 버전 확인
+            <div class="code-container">
+                <div class="code-block"># 버전 확인
 node dist/index.js --version
 
 # 기본 기능 테스트
 echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin
 
 # MCP 서버 등록 확인
-claude mcp list
+claude mcp list</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '# 버전 확인\nnode dist/index.js --version\n\n# 기본 기능 테스트\necho \'{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":1}\' | node dist/index.js --stdin\n\n# MCP 서버 등록 확인\nclaude mcp list')" title="복사">📋</button>
             </div>
 
             <h3>시스템 요구사항</h3>
@@ -530,8 +612,8 @@ claude mcp list
                     <div class="method-icon">💻</div>
                     <h4>Claude Code 설정</h4>
                     <p>Claude Code의 MCP 설정 파일에 다음을 추가하세요:</p>
-                    <div class="json-code">
-{
+                    <div class="code-container">
+                        <div class="json-code">{
   "mcpServers": {
     "ssh-mcp": {
       "command": "node",
@@ -543,7 +625,8 @@ claude mcp list
       }
     }
   }
-}
+}</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, '{\n  \"mcpServers\": {\n    \"ssh-mcp\": {\n      \"command\": \"node\",\n      \"args\": [\"dist/index.js\"],\n      \"env\": {\n        \"SSH_MCP_DEBUG\": \"false\",\n        \"SSH_MCP_TIMEOUT\": \"30\",\n        \"SSH_MCP_MAX_CONNECTIONS\": \"10\"\n      }\n    }\n  }\n}')" title="복사">📋</button>
                     </div>
                 </div>
 
@@ -551,8 +634,8 @@ claude mcp list
                     <div class="method-icon">🤖</div>
                     <h4>Gemini CLI 설정</h4>
                     <p>Gemini CLI 설정 파일에 다음을 추가하세요:</p>
-                    <div class="json-code">
-{
+                    <div class="code-container">
+                        <div class="json-code">{
   "mcpServers": {
     "ssh-mcp": {
       "command": "node",
@@ -562,7 +645,8 @@ claude mcp list
       }
     }
   }
-}
+}</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, '{\n  \"mcpServers\": {\n    \"ssh-mcp\": {\n      \"command\": \"node\",\n      \"args\": [\"dist/index.js\"],\n      \"env\": {\n        \"SSH_MCP_TIMEOUT\": \"45\"\n      }\n    }\n  }\n}')" title="복사">📋</button>
                     </div>
                 </div>
 
@@ -570,8 +654,8 @@ claude mcp list
                     <div class="method-icon">🖥️</div>
                     <h4>Claude Desktop 설정</h4>
                     <p>Claude Desktop 설정 파일에 다음을 추가하세요:</p>
-                    <div class="json-code">
-{
+                    <div class="code-container">
+                        <div class="json-code">{
   "mcpServers": {
     "ssh-mcp": {
       "command": "node",
@@ -581,15 +665,16 @@ claude mcp list
       }
     }
   }
-}
+}</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, '{\n  \"mcpServers\": {\n    \"ssh-mcp\": {\n      \"command\": \"node\",\n      \"args\": [\"dist/index.js\"],\n      \"env\": {\n        \"SSH_MCP_MAX_CONNECTIONS\": \"5\"\n      }\n    }\n  }\n}')" title="복사">📋</button>
                     </div>
                 </div>
             </div>
 
             <h3>환경 변수 설정 파일 (.env)</h3>
             <p>프로젝트 루트에 <code>.env</code> 파일을 생성하여 다음 설정을 추가할 수 있습니다:</p>
-            <div class="code-block">
-# SSH MCP Server Configuration
+            <div class="code-container">
+                <div class="code-block"># SSH MCP Server Configuration
 
 # Server Configuration
 SSH_MCP_DEBUG=false
@@ -615,7 +700,8 @@ SSH_MCP_ALLOW_KEY_AUTH=true
 
 # Logging Configuration
 SSH_MCP_LOG_FILE=
-SSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%
+SSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '# SSH MCP Server Configuration\n\n# Server Configuration\nSSH_MCP_DEBUG=false\nSSH_MCP_MAX_CONNECTIONS=10\nSSH_MCP_TIMEOUT=30\nSSH_MCP_LOG_LEVEL=INFO\n\n# MCP Protocol Configuration\nSSH_MCP_PROTOCOL_VERSION=2024-11-05\nSSH_MCP_SERVER_NAME=ssh-mcp-server\nSSH_MCP_SERVER_VERSION=0.1.0\n\n# Connection Configuration\nSSH_MCP_CONNECTION_TIMEOUT=30\nSSH_MCP_COMMAND_TIMEOUT=60\nSSH_MCP_RECONNECT_ATTEMPTS=3\nSSH_MCP_RECONNECT_DELAY=5\n\n# Security Configuration\nSSH_MCP_ALLOW_PASSWORD_AUTH=true\nSSH_MCP_ALLOW_AGENT_AUTH=true\nSSH_MCP_ALLOW_KEY_AUTH=true\n\n# Logging Configuration\nSSH_MCP_LOG_FILE=\nSSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%')" title="복사">📋</button>
             </div>
         </section>
 
@@ -674,8 +760,8 @@ SSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%
             <h3>사용 예제</h3>
             
             <h4>1. SSH 연결 설정</h4>
-            <div class="code-block">
-// 비밀번호 인증
+            <div class="code-container">
+                <div class="code-block">// 비밀번호 인증
 ssh_connect({
   host: "192.168.1.100",
   username: "admin",
@@ -688,33 +774,37 @@ ssh_connect({
   username: "admin",
   privateKey: "-----BEGIN PRIVATE KEY-----\n...",
   passphrase: "key_passphrase"
-})
+})</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '// 비밀번호 인증\nssh_connect({\n  host: \"192.168.1.100\",\n  username: \"admin\",\n  password: \"your_password\"\n})\n\n// SSH 키 인증\nssh_connect({\n  host: \"192.168.1.100\",\n  username: \"admin\",\n  privateKey: \"-----BEGIN PRIVATE KEY-----\\n...\",\n  passphrase: \"key_passphrase\"\n})')" title="복사">📋</button>
             </div>
 
             <h4>2. 명령어 실행</h4>
-            <div class="code-block">
-ssh_execute_command({
+            <div class="code-container">
+                <div class="code-block">ssh_execute_command({
   connectionId: "admin@192.168.1.100:22",
   command: "ls -la /home/admin",
   cwd: "/home/admin"
-})
+})</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'ssh_execute_command({\n  connectionId: \"admin@192.168.1.100:22\",\n  command: \"ls -la /home/admin\",\n  cwd: \"/home/admin\"\n})')" title="복사">📋</button>
             </div>
 
             <h4>3. 파일 읽기</h4>
-            <div class="code-block">
-ssh_read_file({
+            <div class="code-container">
+                <div class="code-block">ssh_read_file({
   connectionId: "admin@192.168.1.100:22",
   path: "/etc/hosts"
-})
+})</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'ssh_read_file({\n  connectionId: \"admin@192.168.1.100:22\",\n  path: \"/etc/hosts\"\n})')" title="복사">📋</button>
             </div>
 
             <h4>4. 파일 쓰기</h4>
-            <div class="code-block">
-ssh_write_file({
+            <div class="code-container">
+                <div class="code-block">ssh_write_file({
   connectionId: "admin@192.168.1.100:22",
   path: "/tmp/test.txt",
   content: "Hello, World!"
-})
+})</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'ssh_write_file({\n  connectionId: \"admin@192.168.1.100:22\",\n  path: \"/tmp/test.txt\",\n  content: \"Hello, World!\"\n})')" title="복사">📋</button>
             </div>
         </section>
 
@@ -757,8 +847,8 @@ ssh_write_file({
             </div>
 
             <h3>기본 테스트</h3>
-            <div class="code-block">
-# 서버 버전 확인
+            <div class="code-container">
+                <div class="code-block"># 서버 버전 확인
 node dist/index.js --version
 
 # 도움말 보기
@@ -768,23 +858,26 @@ node dist/index.js --help
 node dist/index.js --debug
 
 # stdin 모드로 테스트
-echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '# 서버 버전 확인\nnode dist/index.js --version\n\n# 도움말 보기\nnode dist/index.js --help\n\n# 디버그 모드로 실행\nnode dist/index.js --debug\n\n# stdin 모드로 테스트\necho \'{"jsonrpc":"2.0","method":"tools/list","id":1}\' | node dist/index.js --stdin')" title="복사">📋</button>
             </div>
 
             <h3>로그 확인</h3>
             <p>문제가 발생하면 로그를 확인하여 자세한 오류 정보를 확인할 수 있습니다:</p>
-            <div class="code-block">
-# 로그 레벨을 DEBUG로 설정
+            <div class="code-container">
+                <div class="code-block"># 로그 레벨을 DEBUG로 설정
 export SSH_MCP_LOG_LEVEL=DEBUG
 
 # 로그 파일에 출력
-export SSH_MCP_LOG_FILE=ssh-mcp.log
+export SSH_MCP_LOG_FILE=ssh-mcp.log</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, '# 로그 레벨을 DEBUG로 설정\nexport SSH_MCP_LOG_LEVEL=DEBUG\n\n# 로그 파일에 출력\nexport SSH_MCP_LOG_FILE=ssh-mcp.log')" title="복사">📋</button>
             </div>
 
             <h3>연결 상태 확인</h3>
             <p>현재 활성화된 SSH 연결을 확인하려면:</p>
-            <div class="code-block">
-ssh_list_connections()
+            <div class="code-container">
+                <div class="code-block">ssh_list_connections()</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'ssh_list_connections()')" title="복사">📋</button>
             </div>
         </section>
 
@@ -794,5 +887,54 @@ ssh_list_connections()
             <p>GitHub: <a href="https://github.com/hohollala/SSH_MCP" style="color: white;">https://github.com/hohollala/SSH_MCP</a></p>
         </footer>
     </div>
+
+    <script>
+        function copyToClipboard(button, text) {
+            // 클립보드에 텍스트 복사
+            navigator.clipboard.writeText(text).then(function() {
+                // 버튼 스타일 변경 (복사됨 표시)
+                button.classList.add('copied');
+                button.innerHTML = '✓';
+                
+                // 2초 후 원래 상태로 복원
+                setTimeout(function() {
+                    button.classList.remove('copied');
+                    button.innerHTML = '📋';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('클립보드 복사 실패:', err);
+                // 폴백: 텍스트 영역 생성하여 복사
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // 성공 표시
+                button.classList.add('copied');
+                button.innerHTML = '✓';
+                
+                setTimeout(function() {
+                    button.classList.remove('copied');
+                    button.innerHTML = '📋';
+                }, 2000);
+            });
+        }
+
+        // 부드러운 스크롤
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
