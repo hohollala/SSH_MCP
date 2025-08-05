@@ -1,6 +1,10 @@
 import { createLogger } from './logger.js';
 import { SSHConnectionManager } from './connection-manager.js';
 import { ErrorFactory } from './errors.js';
+import { EnvParser } from './env-parser.js';
+import { sshenvTemplate, gitignoreEntry } from './sshenv-template.js';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 import { 
   SSHConnection, 
   SSHAuthConfig, 
@@ -12,10 +16,22 @@ import {
 
 export class SSHTools {
   private connectionManager: SSHConnectionManager;
+  private envParser: EnvParser;
   private logger = createLogger('SSHTools');
 
   constructor(connectionManager: SSHConnectionManager) {
     this.connectionManager = connectionManager;
+    this.envParser = new EnvParser();
+    this.initializeEnvParser();
+  }
+
+  private async initializeEnvParser(): Promise<void> {
+    try {
+      await this.envParser.loadEnvFile();
+    } catch (error) {
+      // 환경 파일 로드 실패는 치명적이지 않음
+      this.logger.debug('Environment file not loaded on startup');
+    }
   }
 
   // SSH Connect Tool
@@ -205,9 +221,41 @@ export class SSHTools {
     };
   }
 
+  // SSH Init Tool
+  getSSHInitTool(): MCPTool {
+    return {
+      name: 'ssh_init',
+      description: 'Initialize SSH MCP environment by creating .sshenv configuration file',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: {
+            type: 'string',
+            description: 'Path where to create .sshenv file (default: current directory)',
+            default: '.'
+          },
+          force: {
+            type: 'boolean',
+            description: 'Overwrite existing .sshenv file',
+            default: false
+          },
+          addGitignore: {
+            type: 'boolean',
+            description: 'Add .sshenv entry to .gitignore',
+            default: true
+          }
+        }
+      }
+    };
+  }
+
   // Tool execution methods
   async executeSSHConnect(args: any): Promise<SSHConnection> {
-    const { host, port = 22, username, password, privateKey, passphrase, useAgent = false } = args;
+    // 환경변수 치환
+    const expandedArgs = this.envParser.expandObjectVariables(args);
+    const { host, port = 22, username, password, privateKey, passphrase, useAgent = false } = expandedArgs;
+
+    this.logger.debug('SSH Connect with expanded args:', { host, port, username, useAgent });
 
     const auth: SSHAuthConfig = {};
     if (password) auth.password = password;
@@ -329,6 +377,112 @@ export class SSHTools {
     };
   }
 
+  // SSH Init implementation
+  async executeSSHInit(args: any): Promise<{
+    success: boolean;
+    message: string;
+    sshenvPath: string;
+    gitignoreUpdated?: boolean;
+  }> {
+    const { path = '.', force = false, addGitignore = true } = args;
+    
+    const sshenvPath = join(path, '.sshenv');
+    const gitignorePath = join(path, '.gitignore');
+    
+    this.logger.info(`Initializing SSH environment at: ${sshenvPath}`);
+    
+    try {
+      // .sshenv 파일 존재 확인
+      const sshenvExists = await this.fileExists(sshenvPath);
+      
+      if (sshenvExists && !force) {
+        return {
+          success: false,
+          message: '.sshenv file already exists. Use "force: true" to overwrite.',
+          sshenvPath
+        };
+      }
+      
+      // .sshenv 파일 생성
+      await fs.writeFile(sshenvPath, sshenvTemplate, 'utf8');
+      this.logger.info('Created .sshenv file');
+      
+      let gitignoreUpdated = false;
+      
+      // .gitignore 업데이트
+      if (addGitignore) {
+        gitignoreUpdated = await this.updateGitignore(gitignorePath);
+      }
+      
+      // 파일 권한 설정 (Unix 시스템에서만)
+      if (process.platform !== 'win32') {
+        try {
+          await fs.chmod(sshenvPath, 0o600);
+          this.logger.info('Set .sshenv file permissions to 600');
+        } catch (error) {
+          this.logger.warn('Failed to set file permissions:', error);
+        }
+      }
+      
+      const message = sshenvExists ? 
+        'SSH environment file recreated successfully' : 
+        'SSH environment file created successfully';
+      
+      return {
+        success: true,
+        message,
+        sshenvPath,
+        gitignoreUpdated
+      };
+      
+    } catch (error) {
+      this.logger.error('Failed to initialize SSH environment:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw ErrorFactory.fileOperationFailed('create', sshenvPath, { error: errorMessage });
+    }
+  }
+
+  private async fileExists(filePath: string): Promise<boolean> {
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private async updateGitignore(gitignorePath: string): Promise<boolean> {
+    try {
+      let gitignoreContent = '';
+      let exists = false;
+      
+      // 기존 .gitignore 내용 읽기
+      if (await this.fileExists(gitignorePath)) {
+        gitignoreContent = await fs.readFile(gitignorePath, 'utf8');
+        exists = true;
+      }
+      
+      // .sshenv 항목이 이미 있는지 확인
+      if (gitignoreContent.includes('.sshenv')) {
+        this.logger.debug('.sshenv already in .gitignore');
+        return false;
+      }
+      
+      // .gitignore에 .sshenv 항목 추가
+      const updatedContent = gitignoreContent + gitignoreEntry;
+      await fs.writeFile(gitignorePath, updatedContent, 'utf8');
+      
+      const action = exists ? 'Updated' : 'Created';
+      this.logger.info(`${action} .gitignore with .sshenv entry`);
+      
+      return true;
+      
+    } catch (error) {
+      this.logger.warn('Failed to update .gitignore:', error);
+      return false;
+    }
+  }
+
   // Get all tools
   getAllTools(): MCPTool[] {
     return [
@@ -338,7 +492,8 @@ export class SSHTools {
       this.getSSHDisconnectTool(),
       this.getSSHReadFileTool(),
       this.getSSHWriteFileTool(),
-      this.getSSHListFilesTool()
+      this.getSSHListFilesTool(),
+      this.getSSHInitTool()
     ];
   }
 
@@ -359,6 +514,8 @@ export class SSHTools {
         return await this.executeSSHWriteFile(args);
       case 'ssh_list_files':
         return await this.executeSSHListFiles(args);
+      case 'ssh_init':
+        return await this.executeSSHInit(args);
       default:
         throw ErrorFactory.methodNotFound(name);
     }

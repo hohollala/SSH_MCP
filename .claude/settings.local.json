@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ipconfig)",
+      "Bash(powershell:*)",
+      "Bash(telnet:*)",
+      "Bash(npm run build:*)",
+      "Bash(timeout 10 npm start)",
+      "Bash(ls:*)",
+      "Bash(npm run install-commands:*)",
+      "Bash(rm:*)",
+      "Bash(cat:*)",
+      "Bash(timeout 5 npm start)"
+    ],
+    "deny": []
+  }
+}

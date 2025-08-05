@@ -12,7 +12,12 @@
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "install-commands": "node scripts/install-commands.js",
+    "install-commands:force": "node scripts/install-commands.js --force",
+    "install-commands:info": "node scripts/install-commands.js --info",
+    "uninstall-commands": "node scripts/install-commands.js --uninstall",
+    "postinstall": "npm run build && npm run install-commands"
   },
   "keywords": [
     "mcp",

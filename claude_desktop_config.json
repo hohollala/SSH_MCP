@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js"],
+      "env": {
+        "SSH_MCP_DEBUG": "false"
+      }
+    }
+  }
+}

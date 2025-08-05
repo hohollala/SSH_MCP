@@ -20,13 +20,15 @@ function parseArguments(): {
   help: boolean; 
   debug: boolean;
   stdin: boolean;
+  http: boolean;
 } {
   const args = process.argv.slice(2);
   const result = {
     version: false,
     help: false,
     debug: false,
-    stdin: false
+    stdin: false,
+    http: false
   };
 
   for (const arg of args) {
@@ -45,6 +47,9 @@ function parseArguments(): {
         break;
       case '--stdin':
         result.stdin = true;
+        break;
+      case '--http':
+        result.http = true;
         break;
     }
   }
@@ -71,6 +76,7 @@ function printHelp(): void {
   console.log('  -v, --version  Show version information');
   console.log('  -d, --debug    Enable debug mode');
   console.log('  --stdin        Read from stdin (for testing)');
+  console.log('  --http         Start HTTP server (default)');
   console.log('');
   console.log('Environment Variables:');
   console.log('  SSH_MCP_DEBUG              Enable debug mode (default: false)');
@@ -80,40 +86,30 @@ function printHelp(): void {
   console.log('  SSH_MCP_LOG_FILE          Log file path (optional)');
   console.log('');
   console.log('Examples:');
-  console.log('  node dist/index.js                    # Start server normally');
+  console.log('  node dist/index.js                    # Start HTTP server');
+  console.log('  node dist/index.js --stdin            # Start stdin mode');
   console.log('  node dist/index.js --debug            # Start with debug mode');
   console.log('  node dist/index.js --version          # Show version info');
   console.log('');
   console.log('For more information, visit: https://github.com/hohollala/SSH_MCP');
 }
 
-// Handle stdin mode for testing
+// Handle stdin mode - now using proper MCP server
 async function handleStdinMode(): Promise<void> {
-  logger.info('Running in stdin mode for testing');
+  logger.info('Running SSH MCP Server in stdio mode');
   
-  let input = '';
-  process.stdin.setEncoding('utf8');
-  
-  process.stdin.on('data', (chunk) => {
-    input += chunk;
-  });
-  
-  process.stdin.on('end', async () => {
-    try {
-      const request = JSON.parse(input);
-      logger.info('Received stdin request:', request);
-      
-      // Create a temporary server for testing
-      const server = new SSHMCPServer();
-      await server.start();
-      
-      // Process the request (this would need to be implemented)
-      logger.info('Request processed successfully');
-    } catch (error) {
-      logger.error('Error processing stdin request:', error);
-      process.exit(1);
-    }
-  });
+  try {
+    // Create and start the MCP server in stdio mode
+    const server = new SSHMCPServer();
+    await server.start();
+    
+    // The server will keep running until terminated
+    logger.info('SSH MCP Server is running in stdio mode');
+    
+  } catch (error) {
+    logger.error('Error in stdin mode:', error);
+    process.exit(1);
+  }
 }
 
 // Main application entry point
@@ -145,15 +141,15 @@ async function main(): Promise<void> {
     logger.info(`Max connections: ${config.maxConnections}`);
     logger.info(`Log level: ${config.logLevel}`);
 
-    // Handle stdin mode
-    if (args.stdin) {
+    // Handle stdin mode (default for MCP)
+    if (args.stdin || !args.http) {
       await handleStdinMode();
       return;
     }
 
-    // Create and start the MCP server
-    const server = new SSHMCPServer();
-    await server.start();
+    // HTTP mode is deprecated - redirect to stdin
+    logger.warn('HTTP mode is deprecated. Use --stdin for MCP compatibility.');
+    await handleStdinMode();
 
   } catch (error) {
     logger.error('Failed to start SSH MCP Server:', error);
@@ -184,10 +180,8 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-// Start the application if this is the main module
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    logger.error('Application failed to start:', error);
-    process.exit(1);
-  });
-}
+// Start the application
+main().catch((error) => {
+  logger.error('Application failed to start:', error);
+  process.exit(1);
+});
