@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSH MCP Server - 사용법 가이드</title>
+    <title>SSH MCP Server - Model Context Protocol Server for SSH Operations</title>
     <style>
         * {
             margin: 0;
@@ -12,9 +12,9 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #2d3748;
+            color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
@@ -22,180 +22,172 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
 
         header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            color: #2d3748;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            opacity: 0.1;
-            z-index: -1;
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
         h1 {
             font-size: 3rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 1rem;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .subtitle {
-            font-size: 1.3rem;
-            color: #718096;
-            font-weight: 500;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
         }
 
-        .nav {
-            background: rgba(255, 255, 255, 0.95);
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
             backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 20px;
-            z-index: 100;
         }
 
-        .nav ul {
+        nav {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        nav ul {
             list-style: none;
             display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
             justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
 
-        .nav a {
-            color: #667eea;
+        nav a {
+            color: white;
             text-decoration: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 25px;
             transition: all 0.3s ease;
-            background: rgba(102, 126, 234, 0.1);
-            font-weight: 500;
+            background: rgba(255,255,255,0.1);
         }
 
-        .nav a:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .nav a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         h2 {
             color: #667eea;
-            margin-bottom: 1.5rem;
             font-size: 2rem;
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 0.75rem;
-            position: relative;
-        }
-
-        h2::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         h3 {
-            color: #4a5568;
+            color: #495057;
+            font-size: 1.5rem;
             margin: 2rem 0 1rem 0;
-            font-size: 1.4rem;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 0.5rem;
+        }
+
+        h4 {
+            color: #6c757d;
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        h5 {
+            color: #495057;
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem 0;
             font-weight: 600;
         }
 
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            border: 1px solid #4a5568;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
         }
 
-        .code-block::before {
-            content: '💻';
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            background: #2d3748;
-            padding: 0 10px;
-            font-size: 0.8rem;
+        .code-block {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #4a5568;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .json-code {
-            background: #1a202c;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
             color: #e2e8f0;
-            border-radius: 10px;
             padding: 1.5rem;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #4a5568;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .json-code::before {
-            content: '📄';
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            background: #1a202c;
-            padding: 0 10px;
-            font-size: 0.8rem;
+        .install-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .install-method {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .install-method:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .method-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
         }
 
         .feature-grid {
@@ -297,145 +289,54 @@
             padding: 2rem;
             margin: 1.5rem 0;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .tool-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .tool-name {
             color: #667eea;
-            font-weight: bold;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .tool-name::before {
-            content: '🔧';
-            margin-right: 0.5rem;
-        }
-
-        .param-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .param-table th,
-        .param-table td {
-            border: 1px solid #e2e8f0;
-            padding: 1rem;
-            text-align: left;
-        }
-
-        .param-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
         }
 
-        .param-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .param-table tr:hover {
-            background: #e3f2fd;
-        }
-
-        .required {
-            color: #dc3545;
-            font-weight: bold;
-            background: rgba(220, 53, 69, 0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 5px;
-        }
-
-        .optional {
+        .tool-description {
             color: #6c757d;
-            background: rgba(108, 117, 125, 0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 5px;
-        }
-
-        .install-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .install-method {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .install-method:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
-        }
-
-        .install-method h4 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .method-icon {
-            font-size: 2rem;
             margin-bottom: 1rem;
         }
 
         footer {
             text-align: center;
-            padding: 3rem;
-            color: #718096;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
             margin-top: 3rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        footer a {
-            color: #667eea;
-            text-decoration: none;
-            margin: 0 1rem;
-            transition: color 0.3s ease;
-        }
-
-        footer a:hover {
-            color: #764ba2;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 10px;
+                margin: 1rem;
+                padding: 1rem;
             }
-            
+
             h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
-            
-            .nav ul {
+
+            nav ul {
                 flex-direction: column;
-            }
-            
-            .feature-grid {
-                grid-template-columns: 1fr;
+                gap: 1rem;
             }
 
             .install-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -444,122 +345,165 @@
 <body>
     <div class="container">
         <header>
-            <h1>🚀 SSH MCP Server</h1>
-            <p class="subtitle">AI 클라이언트를 위한 SSH 작업 서버 - 완전한 사용법 가이드</p>
+            <h1>🔐 SSH MCP Server</h1>
+            <p class="subtitle">Model Context Protocol Server for SSH Operations with AI Clients</p>
+            <div class="version-badge">v0.1.0</div>
+            
+            <nav>
+                <ul>
+                    <li><a href="#overview">개요</a></li>
+                    <li><a href="#installation">설치</a></li>
+                    <li><a href="#configuration">설정</a></li>
+                    <li><a href="#usage">사용법</a></li>
+                    <li><a href="#troubleshooting">문제해결</a></li>
+                </ul>
+            </nav>
         </header>
-
-        <nav class="nav">
-            <ul>
-                <li><a href="#overview">개요</a></li>
-                <li><a href="#installation">설치</a></li>
-                <li><a href="#configuration">설정</a></li>
-                <li><a href="#tools">도구 사용법</a></li>
-                <li><a href="#examples">사용 예제</a></li>
-                <li><a href="#troubleshooting">문제 해결</a></li>
-            </ul>
-        </nav>
 
         <section id="overview" class="section">
             <h2>📋 개요</h2>
-            <p>SSH MCP Server는 Claude Code, Gemini CLI, Claude Desktop과 같은 AI 클라이언트가 SSH를 통해 원격 Linux 서버에서 작업을 수행할 수 있게 해주는 Model Context Protocol (MCP) 서버입니다.</p>
+            <p>SSH MCP Server는 AI 클라이언트(Claude, Gemini 등)가 원격 서버에 SSH 연결을 통해 명령어를 실행하고 파일을 조작할 수 있도록 해주는 Model Context Protocol (MCP) 서버입니다.</p>
             
             <div class="feature-grid">
                 <div class="feature-card">
+                    <h4>🔗 SSH 연결 관리</h4>
+                    <p>다중 SSH 연결을 안전하게 관리하고 재사용할 수 있습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ 명령어 실행</h4>
+                    <p>원격 서버에서 명령어를 실행하고 결과를 실시간으로 받을 수 있습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📁 파일 조작</h4>
+                    <p>원격 서버의 파일을 읽고, 쓰고, 목록을 확인할 수 있습니다.</p>
+                </div>
+                <div class="feature-card">
                     <h4>🔐 보안 인증</h4>
-                    <p>SSH 키, 비밀번호, SSH 에이전트 인증 방법 지원</p>
+                    <p>비밀번호, SSH 키, SSH 에이전트 등 다양한 인증 방식을 지원합니다.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>🔗 다중 연결</h4>
-                    <p>최대 10개의 동시 SSH 연결 관리</p>
+                    <h4>🛡️ 에러 처리</h4>
+                    <p>연결 실패, 명령어 오류 등 다양한 상황에 대한 안전한 에러 처리를 제공합니다.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>📁 파일 작업</h4>
-                    <p>원격 파일 읽기, 쓰기, 디렉토리 목록 조회</p>
-                </div>
-                <div class="feature-card">
-                    <h4>⚡ 명령 실행</h4>
-                    <p>원격 서버에서 명령 실행 및 결과 반환</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🤖 AI 호환성</h4>
-                    <p>Claude Code, Gemini CLI, Claude Desktop 완전 지원</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🛡️ 오류 처리</h4>
-                    <p>포괄적인 오류 보고 및 복구 메커니즘</p>
+                    <h4>📊 모니터링</h4>
+                    <p>연결 상태, 명령어 실행 시간 등 상세한 모니터링 정보를 제공합니다.</p>
                 </div>
             </div>
         </section>
 
         <section id="installation" class="section">
-            <h2>📦 설치</h2>
+            <h2>🚀 설치</h2>
             
-            <div class="install-methods">
-                <div class="install-method">
-                    <div class="method-icon">🚀</div>
-                    <h4>빠른 설치 (권장)</h4>
-                    <p>가장 간단하고 빠른 설치 방법입니다.</p>
-                    <div class="code-block">
-pip install ssh-mcp-server
-                    </div>
-                    <div class="success">
-                        <strong>✅ 완료!</strong> 설치가 완료되었습니다.
-                    </div>
-                </div>
+            <div class="warning">
+                <strong>⚠️ 사전 요구사항</strong><br>
+                Node.js 18.0.0 이상이 설치되어 있어야 합니다.
+            </div>
 
-                <div class="install-method">
-                    <div class="method-icon">🔧</div>
-                    <h4>가상 환경 설치</h4>
-                    <p>격리된 환경에서 안전하게 설치합니다.</p>
-                    <div class="step">
-                        <span class="step-number">1</span>
-                        <strong>가상 환경 생성:</strong>
-                        <div class="code-block">
-python -m venv ssh-mcp-env
-source ssh-mcp-env/bin/activate  # Linux/macOS
-# 또는
-ssh-mcp-env\Scripts\activate     # Windows
-                        </div>
-                    </div>
-                    <div class="step">
-                        <span class="step-number">2</span>
-                        <strong>패키지 설치:</strong>
-                        <div class="code-block">
-pip install ssh-mcp-server
-                        </div>
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">📦</div>
-                    <h4>소스에서 설치</h4>
-                    <p>최신 기능을 사용하려면 소스에서 설치하세요.</p>
-                    <div class="code-block">
-git clone https://github.com/ssh-mcp-server/ssh-mcp-server.git
-cd ssh-mcp-server
-pip install -e .
-                    </div>
+            <h3>단계별 설치 가이드</h3>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>프로젝트 다운로드</strong>
+                <div class="code-block">
+git clone https://github.com/hohollala/SSH_MCP.git
                 </div>
             </div>
 
-            <h3>설치 확인</h3>
-            <div class="code-block">
-# 버전 확인
-ssh-mcp-server --version
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>프로젝트 폴더로 이동</strong>
+                <div class="code-block">
+cd SSH_MCP
+                </div>
+            </div>
 
-# 기본 기능 테스트
-echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>의존성 설치</strong>
+                <div class="code-block">
+npm install
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>프로젝트 빌드</strong>
+                <div class="code-block">
+npm run build
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>글로벌 설치 (선택사항)</strong>
+                <div class="code-block">
+npm install -g .
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>MCP 서버 등록</strong>
+                
+                <h4>👤 사용자 레벨 등록</h4>
+                <p>사용자 전체에서 사용 가능하도록 등록합니다.</p>
+                
+                <h5>Windows (PowerShell)</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s user -- node dist/index.js
+                </div>
+                
+                <h5>Windows (CMD)</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s user -- node dist/index.js
+                </div>
+                
+                <h5>macOS/Linux</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s user -- node dist/index.js
+                </div>
+                
+                <h4>📁 워크스페이스 레벨 등록</h4>
+                <p>현재 프로젝트에서만 사용하도록 등록합니다.</p>
+                
+                <h5>Windows (PowerShell)</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                </div>
+                
+                <h5>Windows (CMD)</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                </div>
+                
+                <h5>macOS/Linux</h5>
+                <div class="code-block">
+claude mcp add ssh-mcp -s workspace -- node dist/index.js
+                </div>
             </div>
 
             <div class="success">
                 <strong>🎉 설치 완료!</strong> 이제 MCP 클라이언트에서 SSH MCP Server를 사용할 수 있습니다.
             </div>
 
+            <h3>설치 확인</h3>
+            <div class="code-block">
+# 버전 확인
+node dist/index.js --version
+
+# 기본 기능 테스트
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin
+
+# MCP 서버 등록 확인
+claude mcp list
+            </div>
+
             <h3>시스템 요구사항</h3>
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h4>🐍 Python</h4>
-                    <p>Python 3.8 이상</p>
+                    <h4>🟢 Node.js</h4>
+                    <p>Node.js 18.0.0 이상</p>
                 </div>
                 <div class="feature-card">
                     <h4>💾 메모리</h4>
@@ -589,8 +533,9 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
                     <div class="json-code">
 {
   "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["dist/index.js"],
       "env": {
         "SSH_MCP_DEBUG": "false",
         "SSH_MCP_TIMEOUT": "30",
@@ -609,8 +554,9 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
                     <div class="json-code">
 {
   "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["dist/index.js"],
       "env": {
         "SSH_MCP_TIMEOUT": "45"
       }
@@ -627,8 +573,9 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
                     <div class="json-code">
 {
   "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["dist/index.js"],
       "env": {
         "SSH_MCP_MAX_CONNECTIONS": "5"
       }
@@ -639,850 +586,213 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
                 </div>
             </div>
 
-            <h3>환경 변수 설정</h3>
-            <div class="warning">
-                <strong>💡 팁:</strong> 환경 변수를 설정하면 SSH MCP Server의 동작을 세밀하게 제어할 수 있습니다.
-            </div>
-            
-            <table class="param-table">
-                <thead>
-                    <tr>
-                        <th>변수명</th>
-                        <th>설명</th>
-                        <th>기본값</th>
-                        <th>권장값</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>SSH_MCP_DEBUG</code></td>
-                        <td>디버그 로깅 활성화</td>
-                        <td>false</td>
-                        <td>개발시: true</td>
-                    </tr>
-                    <tr>
-                        <td><code>SSH_MCP_TIMEOUT</code></td>
-                        <td>연결 타임아웃 (초)</td>
-                        <td>30</td>
-                        <td>느린 네트워크: 60</td>
-                    </tr>
-                    <tr>
-                        <td><code>SSH_MCP_MAX_CONNECTIONS</code></td>
-                        <td>최대 동시 연결 수</td>
-                        <td>10</td>
-                        <td>제한된 리소스: 5</td>
-                    </tr>
-                    <tr>
-                        <td><code>SSH_MCP_LOG_LEVEL</code></td>
-                        <td>로그 레벨</td>
-                        <td>INFO</td>
-                        <td>문제 해결: DEBUG</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>설정 파일 생성 (선택사항)</h3>
+            <h3>환경 변수 설정 파일 (.env)</h3>
+            <p>프로젝트 루트에 <code>.env</code> 파일을 생성하여 다음 설정을 추가할 수 있습니다:</p>
             <div class="code-block">
-# 설정 디렉토리 생성
-mkdir -p ~/.ssh-mcp-server
+# SSH MCP Server Configuration
 
-# 설정 파일 생성
-cat > ~/.ssh-mcp-server/config.json << EOF
-{
-  "server": {
-    "max_connections": 10,
-    "default_timeout": 30,
-    "debug": false,
-    "log_level": "INFO"
-  },
-  "ssh": {
-    "host_key_policy": "auto_add",
-    "compression": true,
-    "keepalive_interval": 30
-  }
-}
-EOF
-            </div>
+# Server Configuration
+SSH_MCP_DEBUG=false
+SSH_MCP_MAX_CONNECTIONS=10
+SSH_MCP_TIMEOUT=30
+SSH_MCP_LOG_LEVEL=INFO
 
-            <div class="success">
-                <strong>✅ 설정 완료!</strong> 이제 SSH MCP Server를 사용할 준비가 되었습니다.
+# MCP Protocol Configuration
+SSH_MCP_PROTOCOL_VERSION=2024-11-05
+SSH_MCP_SERVER_NAME=ssh-mcp-server
+SSH_MCP_SERVER_VERSION=0.1.0
+
+# Connection Configuration
+SSH_MCP_CONNECTION_TIMEOUT=30
+SSH_MCP_COMMAND_TIMEOUT=60
+SSH_MCP_RECONNECT_ATTEMPTS=3
+SSH_MCP_RECONNECT_DELAY=5
+
+# Security Configuration
+SSH_MCP_ALLOW_PASSWORD_AUTH=true
+SSH_MCP_ALLOW_AGENT_AUTH=true
+SSH_MCP_ALLOW_KEY_AUTH=true
+
+# Logging Configuration
+SSH_MCP_LOG_FILE=
+SSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%
             </div>
         </section>
 
-        <section id="tools" class="section">
-            <h2>🛠️ 도구 사용법</h2>
-
+        <section id="usage" class="section">
+            <h2>📖 사용법</h2>
+            
+            <h3>사용 가능한 도구들</h3>
+            
             <div class="tool-card">
-                <div class="tool-name">ssh_connect - SSH 연결 생성</div>
-                <p>원격 서버에 SSH 연결을 설정합니다.</p>
-                
-                <h4>필수 매개변수:</h4>
-                <table class="param-table">
-                    <tr>
-                        <td><code>hostname</code></td>
-                        <td>원격 서버 호스트명 또는 IP 주소</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>username</code></td>
-                        <td>SSH 사용자명</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>auth_method</code></td>
-                        <td>인증 방법: "key", "password", "agent"</td>
-                        <td class="required">필수</td>
-                    </tr>
-                </table>
-
-                <h4>선택적 매개변수:</h4>
-                <table class="param-table">
-                    <tr>
-                        <td><code>port</code></td>
-                        <td>SSH 포트 번호</td>
-                        <td class="optional">기본값: 22</td>
-                    </tr>
-                    <tr>
-                        <td><code>timeout</code></td>
-                        <td>연결 타임아웃 (초)</td>
-                        <td class="optional">기본값: 30</td>
-                    </tr>
-                    <tr>
-                        <td><code>key_path</code></td>
-                        <td>SSH 개인키 파일 경로</td>
-                        <td class="optional">key 인증시 필요</td>
-                    </tr>
-                    <tr>
-                        <td><code>password</code></td>
-                        <td>SSH 비밀번호</td>
-                        <td class="optional">password 인증시 필요</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "myuser",
-    "auth_method": "key",
-    "key_path": "~/.ssh/id_rsa"
-  }
-}
-                </div>
+                <div class="tool-name">ssh_connect</div>
+                <div class="tool-description">원격 서버에 SSH 연결을 설정합니다.</div>
+                <p><strong>필수 매개변수:</strong> host, username</p>
+                <p><strong>선택 매개변수:</strong> port, password, privateKey, passphrase, useAgent</p>
             </div>
 
             <div class="tool-card">
-                <div class="tool-name">ssh_execute - 명령 실행</div>
-                <p>원격 서버에서 명령을 실행합니다.</p>
-                
-                <table class="param-table">
-                    <tr>
-                        <td><code>connection_id</code></td>
-                        <td>사용할 SSH 연결 ID</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>command</code></td>
-                        <td>실행할 명령</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>timeout</code></td>
-                        <td>명령 타임아웃 (초)</td>
-                        <td class="optional">기본값: 30</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_execute",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "command": "ls -la /home/user"
-  }
-}
-                </div>
+                <div class="tool-name">ssh_execute_command</div>
+                <div class="tool-description">원격 서버에서 명령어를 실행합니다.</div>
+                <p><strong>필수 매개변수:</strong> connectionId, command</p>
+                <p><strong>선택 매개변수:</strong> cwd, timeout</p>
             </div>
 
             <div class="tool-card">
-                <div class="tool-name">ssh_read_file - 파일 읽기</div>
-                <p>원격 서버의 파일 내용을 읽습니다.</p>
-                
-                <table class="param-table">
-                    <tr>
-                        <td><code>connection_id</code></td>
-                        <td>사용할 SSH 연결 ID</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>file_path</code></td>
-                        <td>읽을 파일의 경로</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>encoding</code></td>
-                        <td>파일 인코딩</td>
-                        <td class="optional">기본값: utf-8</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_read_file",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "file_path": "/etc/hostname"
-  }
-}
-                </div>
-            </div>
-
-            <div class="tool-card">
-                <div class="tool-name">ssh_write_file - 파일 쓰기</div>
-                <p>원격 서버에 파일을 작성합니다.</p>
-                
-                <table class="param-table">
-                    <tr>
-                        <td><code>connection_id</code></td>
-                        <td>사용할 SSH 연결 ID</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>file_path</code></td>
-                        <td>작성할 파일의 경로</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>content</code></td>
-                        <td>파일에 쓸 내용</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>mode</code></td>
-                        <td>파일 권한 (8진수)</td>
-                        <td class="optional">예: "644"</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_write_file",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "file_path": "/tmp/test.txt",
-    "content": "Hello, World!",
-    "mode": "644"
-  }
-}
-                </div>
-            </div>
-
-            <div class="tool-card">
-                <div class="tool-name">ssh_list_directory - 디렉토리 목록</div>
-                <p>원격 서버의 디렉토리 내용을 나열합니다.</p>
-                
-                <table class="param-table">
-                    <tr>
-                        <td><code>connection_id</code></td>
-                        <td>사용할 SSH 연결 ID</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>directory_path</code></td>
-                        <td>나열할 디렉토리 경로</td>
-                        <td class="required">필수</td>
-                    </tr>
-                    <tr>
-                        <td><code>show_hidden</code></td>
-                        <td>숨김 파일 포함 여부</td>
-                        <td class="optional">기본값: false</td>
-                    </tr>
-                    <tr>
-                        <td><code>detailed</code></td>
-                        <td>상세 정보 포함 여부</td>
-                        <td class="optional">기본값: false</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_list_directory",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "directory_path": "/home/user",
-    "detailed": true
-  }
-}
-                </div>
-            </div>
-
-            <div class="tool-card">
-                <div class="tool-name">ssh_list_connections - 연결 목록</div>
-                <p>모든 활성 SSH 연결을 나열합니다.</p>
-                
+                <div class="tool-name">ssh_list_connections</div>
+                <div class="tool-description">현재 활성화된 SSH 연결 목록을 표시합니다.</div>
                 <p><strong>매개변수:</strong> 없음</p>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_list_connections",
-  "arguments": {}
-}
-                </div>
             </div>
 
             <div class="tool-card">
-                <div class="tool-name">ssh_disconnect - 연결 종료</div>
-                <p>SSH 연결을 종료합니다.</p>
-                
-                <table class="param-table">
-                    <tr>
-                        <td><code>connection_id</code></td>
-                        <td>종료할 SSH 연결 ID</td>
-                        <td class="required">필수</td>
-                    </tr>
-                </table>
-
-                <h4>사용 예제:</h4>
-                <div class="json-code">
-{
-  "name": "ssh_disconnect",
-  "arguments": {
-    "connection_id": "conn_12345"
-  }
-}
-                </div>
-            </div>
-        </section>
-
-        <section id="examples" class="section">
-            <h2>💡 사용 예제</h2>
-
-            <h3>기본 워크플로우</h3>
-            <div class="step">
-                <span class="step-number">1</span>
-                <strong>서버에 연결:</strong>
-                <div class="json-code">
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "myserver.com",
-    "username": "myuser",
-    "auth_method": "key",
-    "key_path": "~/.ssh/id_rsa"
-  }
-}
-                </div>
+                <div class="tool-name">ssh_disconnect</div>
+                <div class="tool-description">SSH 연결을 종료합니다.</div>
+                <p><strong>필수 매개변수:</strong> connectionId</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">2</span>
-                <strong>시스템 정보 확인:</strong>
-                <div class="json-code">
-{
-  "name": "ssh_execute",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "command": "uname -a && df -h"
-  }
-}
-                </div>
+            <div class="tool-card">
+                <div class="tool-name">ssh_read_file</div>
+                <div class="tool-description">원격 서버의 파일을 읽습니다.</div>
+                <p><strong>필수 매개변수:</strong> connectionId, path</p>
+                <p><strong>선택 매개변수:</strong> encoding</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">3</span>
-                <strong>파일 작업:</strong>
-                <div class="json-code">
-{
-  "name": "ssh_read_file",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "file_path": "/etc/hostname"
-  }
-}
-                </div>
+            <div class="tool-card">
+                <div class="tool-name">ssh_write_file</div>
+                <div class="tool-description">원격 서버에 파일을 씁니다.</div>
+                <p><strong>필수 매개변수:</strong> connectionId, path, content</p>
+                <p><strong>선택 매개변수:</strong> encoding</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">4</span>
-                <strong>연결 종료:</strong>
-                <div class="json-code">
-{
-  "name": "ssh_disconnect",
-  "arguments": {
-    "connection_id": "conn_12345"
-  }
-}
-                </div>
+            <div class="tool-card">
+                <div class="tool-name">ssh_list_files</div>
+                <div class="tool-description">원격 서버의 디렉토리 내용을 나열합니다.</div>
+                <p><strong>필수 매개변수:</strong> connectionId</p>
+                <p><strong>선택 매개변수:</strong> path</p>
             </div>
 
-            <h3>인증 방법별 예제</h3>
+            <h3>사용 예제</h3>
             
-            <div class="install-methods">
-                <div class="install-method">
-                    <div class="method-icon">🔑</div>
-                    <h4>SSH 키 인증</h4>
-                    <p>가장 안전한 인증 방법입니다.</p>
-                    <div class="json-code">
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "user",
-    "auth_method": "key",
-    "key_path": "~/.ssh/id_rsa"
-  }
-}
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">🔐</div>
-                    <h4>비밀번호 인증</h4>
-                    <p>간단하지만 보안에 주의하세요.</p>
-                    <div class="json-code">
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "user",
-    "auth_method": "password",
-    "password": "mypassword"
-  }
-}
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">🤖</div>
-                    <h4>SSH 에이전트 인증</h4>
-                    <p>시스템 SSH 에이전트를 사용합니다.</p>
-                    <div class="json-code">
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "user",
-    "auth_method": "agent"
-  }
-}
-                    </div>
-                </div>
-            </div>
-
-            <h3>실제 사용 시나리오</h3>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h4>🔧 서버 관리</h4>
-                    <p>시스템 모니터링, 로그 확인, 서비스 관리</p>
-                    <div class="code-block">
-# 시스템 상태 확인
-ssh_execute → "top -n 1"
-ssh_execute → "df -h"
-ssh_execute → "systemctl status nginx"
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>📁 파일 관리</h4>
-                    <p>원격 파일 읽기, 쓰기, 디렉토리 탐색</p>
-                    <div class="code-block">
-# 파일 작업
-ssh_list_directory → "/home/user"
-ssh_read_file → "/etc/nginx/nginx.conf"
-ssh_write_file → "/tmp/backup.txt"
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>🚀 배포 자동화</h4>
-                    <p>코드 배포, 설정 업데이트, 서비스 재시작</p>
-                    <div class="code-block">
-# 배포 프로세스
-ssh_execute → "git pull origin main"
-ssh_execute → "npm install"
-ssh_execute → "pm2 restart app"
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>🔍 문제 해결</h4>
-                    <p>로그 분석, 시스템 진단, 오류 추적</p>
-                    <div class="code-block">
-# 문제 진단
-ssh_execute → "tail -n 100 /var/log/error.log"
-ssh_execute → "netstat -tulpn"
-ssh_execute → "ps aux | grep node"
-                    </div>
-                </div>
-            </div>
-
-            <h3>개발 워크플로우 예제</h3>
+            <h4>1. SSH 연결 설정</h4>
             <div class="code-block">
-# 1. 개발 서버 연결
-ssh_connect → connection_id 획득
+// 비밀번호 인증
+ssh_connect({
+  host: "192.168.1.100",
+  username: "admin",
+  password: "your_password"
+})
 
-# 2. 프로젝트 디렉토리 탐색
-ssh_list_directory → 프로젝트 구조 확인
-
-# 3. 소스 코드 읽기
-ssh_read_file → 코드 내용 확인
-
-# 4. 테스트 실행
-ssh_execute → 테스트 명령 실행
-
-# 5. 결과 파일 작성
-ssh_write_file → 결과 저장
-
-# 6. 연결 정리
-ssh_disconnect → 연결 종료
+// SSH 키 인증
+ssh_connect({
+  host: "192.168.1.100",
+  username: "admin",
+  privateKey: "-----BEGIN PRIVATE KEY-----\n...",
+  passphrase: "key_passphrase"
+})
             </div>
 
-            <div class="success">
-                <strong>💡 팁:</strong> 실제 사용시에는 connection_id를 변수에 저장하여 재사용하는 것이 좋습니다.
+            <h4>2. 명령어 실행</h4>
+            <div class="code-block">
+ssh_execute_command({
+  connectionId: "admin@192.168.1.100:22",
+  command: "ls -la /home/admin",
+  cwd: "/home/admin"
+})
+            </div>
+
+            <h4>3. 파일 읽기</h4>
+            <div class="code-block">
+ssh_read_file({
+  connectionId: "admin@192.168.1.100:22",
+  path: "/etc/hosts"
+})
+            </div>
+
+            <h4>4. 파일 쓰기</h4>
+            <div class="code-block">
+ssh_write_file({
+  connectionId: "admin@192.168.1.100:22",
+  path: "/tmp/test.txt",
+  content: "Hello, World!"
+})
             </div>
         </section>
 
         <section id="troubleshooting" class="section">
-            <h2>🔧 문제 해결</h2>
-
-            <h3>일반적인 문제들</h3>
-
-            <div class="install-methods">
-                <div class="install-method">
-                    <div class="method-icon">⏰</div>
-                    <h4>연결 타임아웃</h4>
-                    <p><strong>오류:</strong> "SSH connection failed: Connection timed out"</p>
-                    <p><strong>원인:</strong> 네트워크 연결 문제, 방화벽 차단, 잘못된 호스트명</p>
-                    <div class="code-block">
-# 네트워크 연결 확인
-ping hostname
-
-# SSH 포트 확인
-telnet hostname 22
-
-# 타임아웃 증가 설정
-"timeout": 60
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">🔐</div>
-                    <h4>인증 실패</h4>
-                    <p><strong>오류:</strong> "SSH authentication failed"</p>
-                    <p><strong>원인:</strong> 잘못된 인증 정보, SSH 키 권한 문제</p>
-                    <div class="code-block">
-# SSH 키 권한 확인
-chmod 600 ~/.ssh/id_rsa
-
-# SSH 에이전트 확인
-ssh-add -l
-
-# 수동 SSH 테스트
-ssh user@hostname
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">❌</div>
-                    <h4>명령 실행 실패</h4>
-                    <p><strong>오류:</strong> "Command execution failed"</p>
-                    <p><strong>원인:</strong> 권한 부족, 명령어 오류, 타임아웃</p>
-                    <div class="code-block">
-# 권한 확인
-whoami
-
-# sudo 사용 (필요시)
-sudo command
-
-# 타임아웃 증가
-"timeout": 120
-                    </div>
-                </div>
-            </div>
-
-            <h3>디버그 모드 활성화</h3>
-            <div class="warning">
-                <strong>🔍 디버그 모드:</strong> 문제 해결을 위해 디버그 로깅을 활성화할 수 있습니다.
-            </div>
+            <h2>🔧 문제해결</h2>
             
+            <h3>일반적인 문제들</h3>
+            
+            <div class="warning">
+                <strong>연결 실패</strong><br>
+                <p>SSH 연결이 실패하는 경우 다음을 확인하세요:</p>
+                <ul>
+                    <li>호스트 주소와 포트가 올바른지 확인</li>
+                    <li>사용자명과 비밀번호/키가 정확한지 확인</li>
+                    <li>방화벽 설정 확인</li>
+                    <li>SSH 서비스가 실행 중인지 확인</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <strong>인증 실패</strong><br>
+                <p>인증이 실패하는 경우 다음을 확인하세요:</p>
+                <ul>
+                    <li>비밀번호가 정확한지 확인</li>
+                    <li>SSH 키 형식이 올바른지 확인</li>
+                    <li>키 패스프레이즈가 정확한지 확인</li>
+                    <li>SSH 에이전트가 실행 중인지 확인</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <strong>명령어 실행 실패</strong><br>
+                <p>명령어 실행이 실패하는 경우 다음을 확인하세요:</p>
+                <ul>
+                    <li>명령어 구문이 올바른지 확인</li>
+                    <li>실행 권한이 있는지 확인</li>
+                    <li>작업 디렉토리가 존재하는지 확인</li>
+                    <li>타임아웃 설정 확인</li>
+                </ul>
+            </div>
+
+            <h3>기본 테스트</h3>
             <div class="code-block">
-# 환경 변수로 디버그 활성화
-export SSH_MCP_DEBUG=true
+# 서버 버전 확인
+node dist/index.js --version
+
+# 도움말 보기
+node dist/index.js --help
+
+# 디버그 모드로 실행
+node dist/index.js --debug
+
+# stdin 모드로 테스트
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin
+            </div>
+
+            <h3>로그 확인</h3>
+            <p>문제가 발생하면 로그를 확인하여 자세한 오류 정보를 확인할 수 있습니다:</p>
+            <div class="code-block">
+# 로그 레벨을 DEBUG로 설정
 export SSH_MCP_LOG_LEVEL=DEBUG
 
-# MCP 클라이언트 설정에서 디버그 활성화
-{
-  "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
-      "env": {
-        "SSH_MCP_DEBUG": "true",
-        "SSH_MCP_LOG_LEVEL": "DEBUG"
-      }
-    }
-  }
-}
+# 로그 파일에 출력
+export SSH_MCP_LOG_FILE=ssh-mcp.log
             </div>
 
-            <h3>연결 테스트</h3>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h4>🔍 기본 테스트</h4>
-                    <div class="code-block">
-# SSH MCP Server 버전 확인
-ssh-mcp-server --version
-
-# 기본 기능 테스트
-echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | ssh-mcp-server --stdin
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>🌐 네트워크 테스트</h4>
-                    <div class="code-block">
-# SSH 연결 테스트
-ssh user@hostname
-
-# 포트 확인
-telnet hostname 22
-
-# 네트워크 연결 확인
-ping hostname
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>🔧 설정 확인</h4>
-                    <div class="code-block">
-# SSH 키 확인
-ls -la ~/.ssh/
-
-# SSH 에이전트 확인
-ssh-add -l
-
-# SSH 설정 확인
-cat ~/.ssh/config
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h4>📊 로그 확인</h4>
-                    <div class="code-block">
-# 시스템 로그 확인
-tail -f /var/log/auth.log
-
-# SSH 서버 로그 확인
-journalctl -u ssh
-                    </div>
-                </div>
-            </div>
-
-            <h3>문제 해결 체크리스트</h3>
-            <div class="step">
-                <span class="step-number">1</span>
-                <strong>기본 확인:</strong>
-                <ul>
-                    <li>SSH MCP Server가 설치되어 있는가?</li>
-                    <li>MCP 클라이언트 설정이 올바른가?</li>
-                    <li>네트워크 연결이 정상적인가?</li>
-                </ul>
-            </div>
-
-            <div class="step">
-                <span class="step-number">2</span>
-                <strong>인증 확인:</strong>
-                <ul>
-                    <li>SSH 키 권한이 올바른가? (600)</li>
-                    <li>SSH 에이전트에 키가 로드되어 있는가?</li>
-                    <li>수동 SSH 연결이 가능한가?</li>
-                </ul>
-            </div>
-
-            <div class="step">
-                <span class="step-number">3</span>
-                <strong>서버 확인:</strong>
-                <ul>
-                    <li>SSH 서버가 실행 중인가?</li>
-                    <li>방화벽이 SSH 포트를 차단하고 있지 않은가?</li>
-                    <li>사용자 계정이 활성화되어 있는가?</li>
-                </ul>
-            </div>
-
-            <div class="success">
-                <strong>💡 팁:</strong> 문제가 지속되면 <a href="https://github.com/ssh-mcp-server/ssh-mcp-server/issues">GitHub Issues</a>에서 도움을 요청하세요.
+            <h3>연결 상태 확인</h3>
+            <p>현재 활성화된 SSH 연결을 확인하려면:</p>
+            <div class="code-block">
+ssh_list_connections()
             </div>
         </section>
 
         <footer>
-            <p>&copy; 2024 SSH MCP Server Team. MIT License.</p>
-            <p>
-                <a href="https://github.com/ssh-mcp-server/ssh-mcp-server">GitHub</a> |
-                <a href="https://github.com/ssh-mcp-server/ssh-mcp-server/issues">Issues</a> |
-                <a href="https://github.com/ssh-mcp-server/ssh-mcp-server/discussions">Discussions</a>
-            </p>
+            <p><strong>SSH MCP Server</strong> - Model Context Protocol Server for SSH Operations</p>
+            <p>버전 0.1.0 | MIT 라이선스</p>
+            <p>GitHub: <a href="https://github.com/hohollala/SSH_MCP" style="color: white;">https://github.com/hohollala/SSH_MCP</a></p>
         </footer>
     </div>
-
-    <script>
-        // 부드러운 스크롤 효과
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // 코드 블록 복사 기능
-        document.querySelectorAll('.code-block, .json-code').forEach(block => {
-            block.addEventListener('click', function() {
-                const text = this.textContent.trim();
-                navigator.clipboard.writeText(text).then(() => {
-                    // 복사 성공 표시
-                    const originalBg = this.style.backgroundColor;
-                    this.style.backgroundColor = '#d4edda';
-                    this.style.boxShadow = '0 0 20px rgba(40, 167, 69, 0.5)';
-                    
-                    // 복사 완료 메시지
-                    const copyMsg = document.createElement('div');
-                    copyMsg.textContent = '✅ 복사 완료!';
-                    copyMsg.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: #28a745;
-                        color: white;
-                        padding: 0.5rem 1rem;
-                        border-radius: 5px;
-                        font-size: 0.8rem;
-                        z-index: 1000;
-                        pointer-events: none;
-                    `;
-                    this.style.position = 'relative';
-                    this.appendChild(copyMsg);
-                    
-                    setTimeout(() => {
-                        this.style.backgroundColor = originalBg;
-                        this.style.boxShadow = '';
-                        copyMsg.remove();
-                    }, 1000);
-                }).catch(err => {
-                    console.error('복사 실패:', err);
-                    // 대체 방법으로 복사
-                    const textArea = document.createElement('textarea');
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    
-                    // 성공 표시
-                    this.style.backgroundColor = '#d4edda';
-                    setTimeout(() => {
-                        this.style.backgroundColor = '';
-                    }, 500);
-                });
-            });
-            
-            // 마우스 오버 시 복사 힌트
-            block.title = '클릭하여 복사';
-            block.style.cursor = 'pointer';
-            
-            // 호버 효과
-            block.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.02)';
-                this.style.transition = 'transform 0.2s ease';
-            });
-            
-            block.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-
-        // 네비게이션 활성 상태 표시
-        const sections = document.querySelectorAll('.section');
-        const navLinks = document.querySelectorAll('.nav a');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (scrollY >= (sectionTop - 200)) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        // 스크롤 진행률 표시
-        const progressBar = document.createElement('div');
-        progressBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 3px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 1000;
-            transition: width 0.3s ease;
-        `;
-        document.body.appendChild(progressBar);
-
-        window.addEventListener('scroll', () => {
-            const scrollTop = document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollPercent = (scrollTop / scrollHeight) * 100;
-            progressBar.style.width = scrollPercent + '%';
-        });
-
-        // 섹션 애니메이션
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        sections.forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(section);
-        });
-
-        // 첫 번째 섹션은 즉시 표시
-        if (sections.length > 0) {
-            sections[0].style.opacity = '1';
-            sections[0].style.transform = 'translateY(0)';
-        }
-    </script>
 </body>
 </html>

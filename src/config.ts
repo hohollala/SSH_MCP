@@ -8,23 +8,103 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export interface ServerConfig {
+  // Server configuration
   debug: boolean;
-  defaultTimeout: number;
   maxConnections: number;
-  defaultSSHPort: number;
-  connectionRetryAttempts: number;
-  connectionRetryDelay: number;
+  timeout: number;
   logLevel: string;
+  
+  // MCP protocol configuration
+  protocolVersion: string;
+  serverName: string;
+  serverVersion: string;
+  
+  // Connection configuration
+  connectionTimeout: number;
+  commandTimeout: number;
+  reconnectAttempts: number;
+  reconnectDelay: number;
+  
+  // Security configuration
+  allowPasswordAuth: boolean;
+  allowAgentAuth: boolean;
+  allowKeyAuth: boolean;
+  
+  // Logging configuration
+  logFile?: string;
+  logFormat: string;
 }
 
-export const config: ServerConfig = {
-  debug: process.env.SSH_MCP_DEBUG?.toLowerCase() === 'true',
-  defaultTimeout: parseInt(process.env.SSH_MCP_TIMEOUT || '30', 10),
-  maxConnections: parseInt(process.env.SSH_MCP_MAX_CONNECTIONS || '10', 10),
-  defaultSSHPort: 22,
-  connectionRetryAttempts: 3,
-  connectionRetryDelay: 1000, // milliseconds
-  logLevel: process.env.SSH_MCP_LOG_LEVEL || 'info',
-};
+class ConfigManager {
+  private config: ServerConfig;
 
-export default config;
+  constructor() {
+    this.config = this.loadConfig();
+  }
+
+  private loadConfig(): ServerConfig {
+    return {
+      // Server configuration
+      debug: this.getBoolEnv('SSH_MCP_DEBUG', false),
+      maxConnections: this.getIntEnv('SSH_MCP_MAX_CONNECTIONS', 10),
+      timeout: this.getIntEnv('SSH_MCP_TIMEOUT', 30),
+      logLevel: this.getEnv('SSH_MCP_LOG_LEVEL', 'INFO'),
+      
+      // MCP protocol configuration
+      protocolVersion: this.getEnv('SSH_MCP_PROTOCOL_VERSION', '2024-11-05'),
+      serverName: this.getEnv('SSH_MCP_SERVER_NAME', 'ssh-mcp-server'),
+      serverVersion: this.getEnv('SSH_MCP_SERVER_VERSION', '0.1.0'),
+      
+      // Connection configuration
+      connectionTimeout: this.getIntEnv('SSH_MCP_CONNECTION_TIMEOUT', 30),
+      commandTimeout: this.getIntEnv('SSH_MCP_COMMAND_TIMEOUT', 60),
+      reconnectAttempts: this.getIntEnv('SSH_MCP_RECONNECT_ATTEMPTS', 3),
+      reconnectDelay: this.getIntEnv('SSH_MCP_RECONNECT_DELAY', 5),
+      
+      // Security configuration
+      allowPasswordAuth: this.getBoolEnv('SSH_MCP_ALLOW_PASSWORD_AUTH', true),
+      allowAgentAuth: this.getBoolEnv('SSH_MCP_ALLOW_AGENT_AUTH', true),
+      allowKeyAuth: this.getBoolEnv('SSH_MCP_ALLOW_KEY_AUTH', true),
+      
+      // Logging configuration
+      logFile: this.getEnv('SSH_MCP_LOG_FILE', ''),
+      logFormat: this.getEnv('SSH_MCP_LOG_FORMAT', '%timestamp% - %name% - %level% - %message%')
+    };
+  }
+
+  private getEnv(key: string, defaultValue: string): string {
+    return process.env[key] || defaultValue;
+  }
+
+  private getIntEnv(key: string, defaultValue: number): number {
+    const value = process.env[key];
+    if (value === undefined) return defaultValue;
+    
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? defaultValue : parsed;
+  }
+
+  private getBoolEnv(key: string, defaultValue: boolean): boolean {
+    const value = process.env[key]?.toLowerCase();
+    if (value === undefined) return defaultValue;
+    
+    if (value === 'true' || value === '1' || value === 'yes' || value === 'on') {
+      return true;
+    }
+    if (value === 'false' || value === '0' || value === 'no' || value === 'off') {
+      return false;
+    }
+    return defaultValue;
+  }
+
+  getConfig(): ServerConfig {
+    return { ...this.config };
+  }
+
+  reload(): void {
+    this.config = this.loadConfig();
+  }
+}
+
+const configManager = new ConfigManager();
+export default configManager.getConfig();
