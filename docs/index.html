@@ -1293,6 +1293,166 @@ export SSH_MCP_LOG_FILE=ssh-mcp.log</div>
                 <div class="code-block">ssh_list_connections()</div>
                 <button class="copy-btn" onclick="copyToClipboard(this, 'list-connections')" title="복사">📋</button>
             </div>
+
+            <h3>고급 문제해결</h3>
+            
+            <div class="warning">
+                <strong>🔧 라이브러리 호환성 문제</strong><br>
+                <p>SSH MCP Server는 ssh2 라이브러리를 사용하며, 다음과 같은 호환성 요구사항이 있습니다:</p>
+                
+                <h4>Node.js 버전 호환성</h4>
+                <ul>
+                    <li><strong>지원 버전:</strong> Node.js 18.0.0 이상</li>
+                    <li><strong>권장 버전:</strong> Node.js 20.x LTS</li>
+                    <li><strong>확인 방법:</strong> <code>node --version</code></li>
+                </ul>
+                
+                <h4>ssh2 라이브러리 관련 문제</h4>
+                <p>다음 오류 메시지가 나타나는 경우:</p>
+                <div class="code-container">
+                    <div class="code-block">Error: Cannot parse private key
+Error: All configured authentication methods failed
+ECONNRESET: Connection reset by peer</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'ssh2-errors')" title="복사">📋</button>
+                </div>
+                
+                <p><strong>해결 방법:</strong></p>
+                <ol>
+                    <li><strong>의존성 재설치:</strong></li>
+                    <div class="code-container">
+                        <div class="code-block">rm -rf node_modules package-lock.json
+npm install</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'reinstall-deps')" title="복사">📋</button>
+                    </div>
+                    
+                    <li><strong>네이티브 모듈 재빌드:</strong></li>
+                    <div class="code-container">
+                        <div class="code-block">npm rebuild</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'rebuild-modules')" title="복사">📋</button>
+                    </div>
+                    
+                    <li><strong>Python 환경 확인 (Windows):</strong></li>
+                    <div class="code-container">
+                        <div class="code-block">npm install --global windows-build-tools</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'windows-build-tools')" title="복사">📋</button>
+                    </div>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <strong>🔐 SSH 키 형식 및 PEM 접속 문제</strong><br>
+                
+                <h4>SSH 키 형식 확인</h4>
+                <p>SSH 키 파일의 첫 줄을 확인하여 형식을 판단할 수 있습니다:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>✅ 올바른 PEM 형식</h4>
+                        <div class="code-container">
+                            <div class="code-block">-----BEGIN RSA PRIVATE KEY-----
+-----BEGIN PRIVATE KEY-----
+-----BEGIN EC PRIVATE KEY-----
+-----BEGIN DSA PRIVATE KEY-----</div>
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'pem-formats')" title="복사">📋</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>❌ 지원하지 않는 OpenSSH 형식</h4>
+                        <div class="code-container">
+                            <div class="code-block">-----BEGIN OPENSSH PRIVATE KEY-----</div>
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'openssh-format')" title="복사">📋</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4>SSH 키 변환 방법</h4>
+                <p>OpenSSH 형식을 PEM 형식으로 변환:</p>
+                
+                <h5>1. 백업 생성</h5>
+                <div class="code-container">
+                    <div class="code-block">cp ~/.ssh/id_rsa ~/.ssh/id_rsa.backup</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'backup-key')" title="복사">📋</button>
+                </div>
+                
+                <h5>2. PEM 형식으로 변환</h5>
+                <div class="code-container">
+                    <div class="code-block"># 패스프레이즈 없는 키 변환
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""
+
+# 패스프레이즈 있는 키 변환 (기존 패스프레이즈 유지)
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'convert-key-detailed')" title="복사">📋</button>
+                </div>
+                
+                <h5>3. 새로운 PEM 키 생성</h5>
+                <div class="code-container">
+                    <div class="code-block"># RSA 키 생성 (PEM 형식)
+ssh-keygen -t rsa -b 4096 -m PEM -f ~/.ssh/id_rsa_pem -C "your_email@example.com"
+
+# Ed25519 키를 PEM 형식으로 변환
+ssh-keygen -p -m PEM -f ~/.ssh/id_ed25519</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'generate-pem-key')" title="복사">📋</button>
+                </div>
+                
+                <h4>PEM 키 검증</h4>
+                <div class="code-container">
+                    <div class="code-block"># 키 형식 확인
+head -1 ~/.ssh/id_rsa
+
+# 키 유효성 검사
+ssh-keygen -l -f ~/.ssh/id_rsa
+
+# 공개키 생성 확인
+ssh-keygen -y -f ~/.ssh/id_rsa</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'verify-pem-key')" title="복사">📋</button>
+                </div>
+            </div>
+
+            <div class="warning">
+                <strong>🌐 네트워크 및 방화벽 문제</strong><br>
+                
+                <h4>연결 테스트</h4>
+                <div class="code-container">
+                    <div class="code-block"># 서버 연결성 확인
+telnet [서버주소] 22
+
+# SSH 연결 테스트
+ssh -v [사용자명]@[서버주소]
+
+# 특정 포트로 연결 테스트
+nc -zv [서버주소] [포트번호]</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'network-test')" title="복사">📋</button>
+                </div>
+                
+                <h4>SSH 서버 설정 확인</h4>
+                <p>원격 서버에서 다음 설정을 확인하세요:</p>
+                <div class="code-container">
+                    <div class="code-block"># SSH 서비스 상태 확인
+sudo systemctl status ssh
+
+# SSH 설정 확인
+sudo sshd -T | grep -E '(passwordauthentication|pubkeyauthentication|permitrootlogin)'
+
+# SSH 로그 확인
+sudo tail -f /var/log/auth.log</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'ssh-server-check')" title="복사">📋</button>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>💡 문제해결 요청 시 포함할 정보</strong><br>
+                <p>문제 발생 시 다음 정보를 함께 제공하면 더 빠른 해결이 가능합니다:</p>
+                <ul>
+                    <li><strong>운영체제:</strong> Windows/macOS/Linux 버전</li>
+                    <li><strong>Node.js 버전:</strong> <code>node --version</code> 결과</li>
+                    <li><strong>SSH MCP 버전:</strong> <code>node dist/index.js --version</code> 결과</li>
+                    <li><strong>오류 메시지:</strong> 전체 오류 로그</li>
+                    <li><strong>SSH 키 형식:</strong> <code>head -1 ~/.ssh/id_rsa</code> 결과</li>
+                    <li><strong>대상 서버 OS:</strong> 접속하려는 서버의 운영체제</li>
+                    <li><strong>네트워크 환경:</strong> 방화벽, VPN, 프록시 사용 여부</li>
+                </ul>
+            </div>
         </section>
 
         <footer>

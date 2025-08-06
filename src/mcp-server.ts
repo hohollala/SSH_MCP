@@ -67,7 +67,31 @@ export class SSHMCPServer {
             }
           ]
         };
-      } catch (error) {
+      } catch (error: any) {
+        this.logger.error(`Tool execution failed for ${name}:`, error);
+        
+        // SSH MCP Server 에러인 경우 상세 정보 포함
+        if (error.code) {
+          const errorResponse = {
+            error: true,
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            tool: name,
+            arguments: args
+          };
+          
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(errorResponse, null, 2)
+              }
+            ]
+          };
+        }
+        
+        // 일반 에러인 경우
         throw new Error(error instanceof Error ? error.message : 'Tool execution failed');
       }
     });

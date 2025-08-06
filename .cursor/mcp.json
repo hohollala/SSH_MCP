@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "true",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+}

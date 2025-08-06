@@ -58,12 +58,16 @@ export class SSHConnectionManager implements ConnectionManager {
       // Add authentication methods
       if (auth.password) {
         connectConfig.password = auth.password;
-      } else if (auth.privateKey) {
+      }
+      
+      if (auth.privateKey) {
         connectConfig.privateKey = auth.privateKey;
         if (auth.passphrase) {
           connectConfig.passphrase = auth.passphrase;
         }
-      } else if (auth.agent) {
+      }
+      
+      if (auth.agent) {
         connectConfig.agent = process.env.SSH_AUTH_SOCK;
       }
 
@@ -93,9 +97,35 @@ export class SSHConnectionManager implements ConnectionManager {
         resolve(connectionInfo);
       });
 
-      client.on('error', (error) => {
+      client.on('error', (error: any) => {
         this.logger.error(`SSH connection error to ${host}:${port}:`, error);
-        reject(ErrorFactory.connectionFailed(host, port, { error: error.message }));
+        
+        // 더 구체적인 에러 정보 제공
+        let errorDetails: any = {
+          originalError: error.message,
+          code: error.code,
+          level: error.level
+        };
+
+        // 에러 유형별 상세 정보 및 해결 방법 제공
+        if (error.code === 'ECONNREFUSED') {
+          errorDetails.suggestion = 'SSH 서버가 실행 중인지 확인하고, 방화벽 설정을 점검하세요.';
+          errorDetails.commonCauses = ['SSH 서비스 중지', '방화벽 차단', '잘못된 포트 번호'];
+        } else if (error.code === 'ENOTFOUND') {
+          errorDetails.suggestion = '호스트 이름이 올바른지 확인하고, DNS 설정을 점검하세요.';
+          errorDetails.commonCauses = ['잘못된 호스트명', 'DNS 해상도 실패', '네트워크 연결 문제'];
+        } else if (error.code === 'ETIMEDOUT') {
+          errorDetails.suggestion = '네트워크 연결을 확인하고, 타임아웃 설정을 늘려보세요.';
+          errorDetails.commonCauses = ['네트워크 지연', 'SSH 서버 응답 지연', '방화벽 차단'];
+        } else if (error.level === 'client-authentication') {
+          errorDetails.suggestion = '인증 정보(비밀번호/키)를 확인하고, SSH 키 형식을 점검하세요.';
+          errorDetails.commonCauses = ['잘못된 인증 정보', 'SSH 키 형식 문제', '권한 설정 문제'];
+        } else if (error.level === 'protocol') {
+          errorDetails.suggestion = 'SSH 프로토콜 버전을 확인하고, 서버 설정을 점검하세요.';
+          errorDetails.commonCauses = ['프로토콜 버전 불일치', '암호화 알고리즘 불일치'];
+        }
+
+        reject(ErrorFactory.connectionFailed(host, port, errorDetails));
       });
 
       client.on('timeout', () => {

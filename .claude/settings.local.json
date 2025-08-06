@@ -17,7 +17,8 @@
       "Bash(cp test_with_json_env.json .sshenv)",
       "Bash(ssh:*)",
       "Bash(icacls:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   }
