@@ -1,0 +1,16 @@
+{
+  "_comments": {
+    "description": "Test SSH MCP Server Configuration"
+  },
+  "servers": {
+    "test": {
+      "TEST_HOST": "158.180.71.210",
+      "TEST_USER": "ubuntu",
+      "TEST_KEY_PATH": "./test_key.pem",
+      "TEST_PORT": 22
+    }
+  },
+  "defaults": {
+    "DEFAULT_TIMEOUT": 30
+  }
+}

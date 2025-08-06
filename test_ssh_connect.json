@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "ssh_connect",
+    "arguments": {
+      "host": "158.180.71.210",
+      "port": 22,
+      "username": "ubuntu",
+      "privateKeyPath": "./test_key.pem"
+    }
+  }
+}

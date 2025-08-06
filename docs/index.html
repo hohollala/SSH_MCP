@@ -241,7 +241,7 @@
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: 1fr;
             gap: 2rem;
             margin: 2.5rem 0;
         }
@@ -549,21 +549,99 @@
                 </div>
             </div>
 
-            <h4>📝 수동 설정: ~/.claude.json 파일 편집</h4>
-            <p>Claude Code 설정 파일을 직접 편집하여 MCP 서버를 추가할 수 있습니다.</p>
-            <p><strong>Windows:</strong> C:\Users\사용자명\.claude.json</p>
+            <h4>📝 수동 설정: MCP 설정 파일 편집</h4>
+            <p>각 MCP 클라이언트의 설정 파일을 직접 편집하여 SSH MCP 서버를 추가할 수 있습니다.</p>
+            
+            <h5>Claude Desktop</h5>
+            <p><strong>설정 파일 위치:</strong></p>
+            <ul>
+                <li><strong>Windows:</strong> %USERPROFILE%\.claude\settings.json</li>
+                <li><strong>macOS/Linux:</strong> ~/.claude/settings.json</li>
+            </ul>
             <div class="code-container">
                 <div class="json-code">{
   "mcpServers": {
     "ssh-mcp": {
-      "type": "stdio",
       "command": "node",
-      "args": [ "[설치폴더경로]/dist/index.js" ],
-      "env": {}
+      "args": ["[설치위치]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
     }
   }
 }</div>
-                <button class="copy-btn" onclick="copyToClipboard(this, 'manual-config')" title="복사">📋</button>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'claude-desktop-manual')" title="복사">📋</button>
+            </div>
+            
+            <h5>Cursor</h5>
+            <p><strong>설정 파일 위치:</strong></p>
+            <ul>
+                <li><strong>Windows:</strong> %APPDATA%\Cursor\User\mcp.json</li>                
+                <li><strong>macOS/Linux:</strong> ~/.config/Cursor/User/mcp.json</li>
+            </ul>
+            <div class="code-container">
+                <div class="json-code">{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[설치위치]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+}</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'cursor-manual')" title="복사">📋</button>
+            </div>
+            
+            <h5>Claude Code</h5>
+            <p><strong>설정 파일 위치:</strong></p>
+            <ul>
+                <li><strong>Windows:</strong> %USERPROFILE%\.claude-code\mcp.json</li>
+                <li><strong>macOS/Linux:</strong> ~/.claude-code/mcp.json</li>
+            </ul>
+            <div class="code-container">
+                <div class="json-code">{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[설치위치]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+}</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'claude-code-manual')" title="복사">📋</button>
+            </div>
+
+            <h5>Gemini CLI</h5>
+            <p><strong>설정 파일 위치:</strong></p>
+            <ul>
+                <li><strong>Windows:</strong> %USERPROFILE%\.gemini\settings.json</li>
+                <li><strong>macOS/Linux:</strong> ~/.gemini/settings.json</li>
+            </ul>
+            <div class="code-container">
+                <div class="json-code">{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[설치위치]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+}</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'gemini-cli-manual')" title="복사">📋</button>
             </div>
 
             <div class="success">
@@ -607,68 +685,60 @@ claude mcp list</div>
         <section id="configuration" class="section">
             <h2>⚙️ 설정</h2>
 
-            <h3>MCP 클라이언트 설정</h3>
+            <h3>SSH 연결 설정 파일 (.sshenv)</h3>
+            <p><code>ssh_init</code> 도구를 사용하여 <code>.sshenv</code> 파일을 생성하면 SSH 연결 정보를 안전하게 관리할 수 있습니다. JSON 형식을 지원합니다:</p>
             
-            <div class="install-methods">
-                <div class="install-method">
-                    <div class="method-icon">💻</div>
-                    <h4>Claude Code 설정</h4>
-                    <p>Claude Code의 MCP 설정 파일에 다음을 추가하세요:</p>
-                    <div class="code-container">
-                        <div class="json-code">{
-  "mcpServers": {
-    "ssh-mcp": {
-      "command": "node",
-      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js"],
-      "env": {
-        "SSH_MCP_DEBUG": "false"
-      }
+            <h4>JSON 형식 (.sshenv)</h4>
+            <div class="code-container">
+                <div class="json-code">{
+  "servers": {
+    "development": {
+      "DEV_HOST": "192.168.1.100",
+      "DEV_USER": "ubuntu",
+      "DEV_PASSWORD": "your_password",
+      "DEV_KEY_PATH": "~/.ssh/id_rsa",
+      "DEV_PORT": 22
+    },
+    "staging": {
+      "STAGING_HOST": "staging.example.com",
+      "STAGING_USER": "deploy",
+      "STAGING_KEY_PATH": "~/.ssh/staging_key",
+      "STAGING_PORT": 22
+    },
+    "production": {
+      "PROD_HOST": "prod.example.com",
+      "PROD_USER": "admin",
+      "PROD_KEY_PATH": "~/.ssh/prod_key",
+      "PROD_PORT": 22
+    }
+  },
+  "defaults": {
+    "DEFAULT_PORT": 22,
+    "DEFAULT_TIMEOUT": 30
+  },
+  "templates": {
+    "web_server": {
+      "TEMPLATE_USER": "www-data",
+      "TEMPLATE_PORT": 22
     }
   }
 }</div>
-                        <button class="copy-btn" onclick="copyToClipboard(this, 'claude-code-config')" title="복사">📋</button>
-                    </div>
-                </div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'sshenv-json')" title="복사">📋</button>
+            </div>
+            
+            <h4>기존 KEY=VALUE 형식도 지원</h4>
+            <div class="code-container">
+                <div class="code-block"># 개발 서버
+DEV_HOST=192.168.1.100
+DEV_USER=ubuntu
+DEV_PASSWORD=your_password
+DEV_KEY_PATH=~/.ssh/id_rsa
 
-                <div class="install-method">
-                    <div class="method-icon">🤖</div>
-                    <h4>Gemini CLI 설정</h4>
-                    <p>Gemini CLI 설정 파일에 다음을 추가하세요:</p>
-                    <div class="code-container">
-                        <div class="json-code">{
-  "mcpServers": {
-    "ssh-mcp": {
-      "command": "node",
-      "args": ["/path/to/SSH_MCP/dist/index.js"],
-      "env": {
-        "SSH_MCP_DEBUG": "false"
-      }
-    }
-  }
-}</div>
-                        <button class="copy-btn" onclick="copyToClipboard(this, 'gemini-config')" title="복사">📋</button>
-                    </div>
-                </div>
-
-                <div class="install-method">
-                    <div class="method-icon">🖥️</div>
-                    <h4>Claude Desktop 설정</h4>
-                    <p>Claude Desktop 설정 파일 (%APPDATA%\Claude\claude_desktop_config.json):</p>
-                    <div class="code-container">
-                        <div class="json-code">{
-  "mcpServers": {
-    "ssh-mcp": {
-      "command": "node",
-      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js"],
-      "env": {
-        "SSH_MCP_DEBUG": "false"
-      }
-    }
-  }
-}</div>
-                        <button class="copy-btn" onclick="copyToClipboard(this, 'claude-desktop-config')" title="복사">📋</button>
-                    </div>
-                </div>
+# 운영 서버  
+PROD_HOST=prod.example.com
+PROD_USER=admin
+PROD_KEY_PATH=~/.ssh/prod_key</div>
+                <button class="copy-btn" onclick="copyToClipboard(this, 'sshenv-keyvalue')" title="복사">📋</button>
             </div>
 
             <h3>환경 변수 설정 파일 (.env)</h3>
@@ -708,6 +778,98 @@ SSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%</div>
         <section id="usage" class="section">
             <h2>📖 사용법</h2>
             
+            <h3>🚀 실제 사용 예시</h3>
+            <p>SSH MCP 서버를 설정한 후, 다음과 같이 간단한 요청으로 서버 작업을 할 수 있습니다:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔗 서버 연결</h4>
+                    <div class="code-container">
+                        <div class="code-block">"158.180.71.210 서버에 연결해서 PHP 버전을 확인해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-connect')" title="복사">📋</button>
+                    </div>
+                    <p>MCP 서버가 자동으로 SSH 연결을 설정하고 PHP 버전을 확인합니다.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📊 시스템 정보</h4>
+                    <div class="code-container">
+                        <div class="code-block">"서버의 시스템 정보를 종합적으로 분석해줘. CPU, 메모리, 디스크 사용량을 확인하고"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-system')" title="복사">📋</button>
+                    </div>
+                    <p>시스템 리소스 사용량을 분석하고 문제점을 찾아냅니다.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📁 파일 관리</h4>
+                    <div class="code-container">
+                        <div class="code-block">"웹 루트 디렉토리의 파일들을 확인하고, config.php 파일을 읽어서 내용을 분석해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-files')" title="복사">📋</button>
+                    </div>
+                    <p>디렉토리 탐색과 파일 내용 분석을 동시에 수행합니다.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔍 로그 분석</h4>
+                    <div class="code-container">
+                        <div class="code-block">"Nginx 에러 로그를 분석해서 최근 오류들을 찾아주고, 해결 방안을 제시해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-logs')" title="복사">📋</button>
+                    </div>
+                    <p>로그 파일을 분석하여 문제점을 찾고 해결책을 제안합니다.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🛠️ 개발 작업</h4>
+                    <div class="code-container">
+                        <div class="code-block">"PHP 프로젝트의 composer.json을 확인하고, 필요한 패키지들을 업데이트해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-dev')" title="복사">📋</button>
+                    </div>
+                    <p>개발 환경 설정과 패키지 관리를 자동화합니다.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔧 서비스 관리</h4>
+                    <div class="code-container">
+                        <div class="code-block">"Docker 컨테이너들의 상태를 확인하고, 중단된 서비스가 있다면 재시작해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-services')" title="복사">📋</button>
+                    </div>
+                    <p>서비스 상태를 모니터링하고 자동으로 복구합니다.</p>
+                </div>
+            </div>
+
+            <h3>💡 고급 사용 팁</h3>
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">🎯</div>
+                    <h4>환경 변수 활용</h4>
+                    <p>.sshenv 파일에 서버 정보를 저장하고 환경 변수로 참조하세요:</p>
+                    <div class="code-container">
+                        <div class="code-block">"${DEV_HOST} 서버에 ${DEV_USER}로 연결해서 작업해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-env')" title="복사">📋</button>
+                    </div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">🔄</div>
+                    <h4>자동화 워크플로우</h4>
+                    <p>복잡한 작업을 단계별로 요청하세요:</p>
+                    <div class="code-container">
+                        <div class="code-block">"1. 서버에 연결하고 2. 백업을 만들고 3. 새 코드를 배포하고 4. 서비스를 재시작해줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-workflow')" title="복사">📋</button>
+                    </div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">📈</div>
+                    <h4>모니터링 설정</h4>
+                    <p>정기적인 모니터링을 설정하세요:</p>
+                    <div class="code-container">
+                        <div class="code-block">"매일 아침 9시에 서버 상태를 체크하고 문제가 있으면 알려주는 스크립트를 만들어줘"</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'example-monitoring')" title="복사">📋</button>
+                    </div>
+                </div>
+            </div>
+
             <h3>사용 가능한 도구들</h3>
             
             <div class="tool-card">
@@ -1073,10 +1235,18 @@ gc mcp add ssh-mcp --command "node" --args "[설치경로]/dist/index.js"</div>
                 <p>인증이 실패하는 경우 다음을 확인하세요:</p>
                 <ul>
                     <li>비밀번호가 정확한지 확인</li>
-                    <li>SSH 키 형식이 올바른지 확인</li>
+                    <li>SSH 키 형식이 올바른지 확인 (PEM 형식 필요)</li>
                     <li>키 패스프레이즈가 정확한지 확인</li>
                     <li>SSH 에이전트가 실행 중인지 확인</li>
                 </ul>
+                
+                <h4>🔑 SSH 키 형식 문제 해결</h4>
+                <p>SSH MCP Server는 PEM 형식의 SSH 키만 지원합니다. OpenSSH 형식의 키를 사용하는 경우 다음 명령어로 변환하세요:</p>
+                <div class="code-container">
+                    <div class="code-block">ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""</div>
+                    <button class="copy-btn" onclick="copyToClipboard(this, 'convert-ssh-key')" title="복사">📋</button>
+                </div>
+                <p><strong>주의:</strong> 이 명령어는 기존 키를 PEM 형식으로 변환합니다. 백업을 권장합니다.</p>
             </div>
 
             <div class="warning">
@@ -1146,11 +1316,11 @@ export SSH_MCP_LOG_FILE=ssh-mcp.log</div>
             'claude-workspace-powershell': 'claude mcp add ssh-mcp -s workspace -- node "$PWD/dist/index.js"',
             'claude-workspace-cmd': 'claude mcp add ssh-mcp -s workspace -- node "[설치경로]/dist/index.js"',
             'claude-workspace-unix': 'claude mcp add ssh-mcp -s workspace -- node $(pwd)/dist/index.js',
-            'manual-config': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "type": "stdio",\n      "command": "node",\n      "args": [ "[설치폴더경로]/dist/index.js" ],\n      "env": {}\n    }\n  }\n}',
+            'claude-desktop-manual': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["[설치위치]/dist/index.js", "--stdin"],\n      "env": {\n        "SSH_MCP_DEBUG": "false",\n        "SSH_MCP_TIMEOUT": "30",\n        "SSH_MCP_MAX_CONNECTIONS": "10"\n      }\n    }\n  }\n}',
+            'cursor-manual': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["[설치위치]/dist/index.js", "--stdin"],\n      "env": {\n        "SSH_MCP_DEBUG": "false",\n        "SSH_MCP_TIMEOUT": "30",\n        "SSH_MCP_MAX_CONNECTIONS": "10"\n      }\n    }\n  }\n}',
+            'claude-code-manual': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["[설치위치]/dist/index.js", "--stdin"],\n      "env": {\n        "SSH_MCP_DEBUG": "false",\n        "SSH_MCP_TIMEOUT": "30",\n        "SSH_MCP_MAX_CONNECTIONS": "10"\n      }\n    }\n  }\n}',
+            'gemini-cli-manual': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["[설치위치]/dist/index.js", "--stdin"],\n      "env": {\n        "SSH_MCP_DEBUG": "false",\n        "SSH_MCP_TIMEOUT": "30",\n        "SSH_MCP_MAX_CONNECTIONS": "10"\n      }\n    }\n  }\n}',
             'test-commands': '# 버전 확인\nnode dist/index.js --version\n\n# 기본 기능 테스트\necho \'{"jsonrpc":"2.0","method":"tools/list","id":1}\' | node dist/index.js --stdin\n\n# MCP 서버 등록 확인\nclaude mcp list',
-            'claude-code-config': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["E:\\\\MCPProjects\\\\SSH_MCP\\\\dist\\\\index.js"],\n      "env": {\n        "SSH_MCP_DEBUG": "false"\n      }\n    }\n  }\n}',
-            'gemini-config': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["/path/to/SSH_MCP/dist/index.js"],\n      "env": {\n        "SSH_MCP_DEBUG": "false"\n      }\n    }\n  }\n}',
-            'claude-desktop-config': '{\n  "mcpServers": {\n    "ssh-mcp": {\n      "command": "node",\n      "args": ["E:\\\\MCPProjects\\\\SSH_MCP\\\\dist\\\\index.js"],\n      "env": {\n        "SSH_MCP_DEBUG": "false"\n      }\n    }\n  }\n}',
             'env-config': '# SSH MCP Server Configuration\n\n# Server Configuration\nSSH_MCP_DEBUG=false\nSSH_MCP_MAX_CONNECTIONS=10\nSSH_MCP_TIMEOUT=30\nSSH_MCP_LOG_LEVEL=INFO\n\n# MCP Protocol Configuration\nSSH_MCP_PROTOCOL_VERSION=2024-11-05\nSSH_MCP_SERVER_NAME=ssh-mcp-server\nSSH_MCP_SERVER_VERSION=0.1.0\n\n# Connection Configuration\nSSH_MCP_CONNECTION_TIMEOUT=30\nSSH_MCP_COMMAND_TIMEOUT=60\nSSH_MCP_RECONNECT_ATTEMPTS=3\nSSH_MCP_RECONNECT_DELAY=5\n\n# Security Configuration\nSSH_MCP_ALLOW_PASSWORD_AUTH=true\nSSH_MCP_ALLOW_AGENT_AUTH=true\nSSH_MCP_ALLOW_KEY_AUTH=true\n\n# Logging Configuration\nSSH_MCP_LOG_FILE=\nSSH_MCP_LOG_FORMAT=%timestamp% - %name% - %level% - %message%',
             'ssh-connect-password': '// 비밀번호 인증\nssh_connect({\n  host: "192.168.1.100",\n  username: "admin",\n  password: "your_password"\n})\n\n// SSH 키 인증\nssh_connect({\n  host: "192.168.1.100",\n  username: "admin",\n  privateKey: "-----BEGIN PRIVATE KEY-----\\n...",\n  passphrase: "key_passphrase"\n})',
             'ssh-execute': 'ssh_execute_command({\n  connectionId: "admin@192.168.1.100:22",\n  command: "ls -la /home/admin",\n  cwd: "/home/admin"\n})',
@@ -1158,7 +1328,19 @@ export SSH_MCP_LOG_FILE=ssh-mcp.log</div>
             'ssh-write': 'ssh_write_file({\n  connectionId: "admin@192.168.1.100:22",\n  path: "/tmp/test.txt",\n  content: "Hello, World!"\n})',
             'basic-test': '# 서버 버전 확인\nnode dist/index.js --version\n\n# 도움말 보기\nnode dist/index.js --help\n\n# 디버그 모드로 실행\nnode dist/index.js --debug\n\n# stdin 모드로 테스트\necho \'{"jsonrpc":"2.0","method":"tools/list","id":1}\' | node dist/index.js --stdin',
             'log-config': '# 로그 레벨을 DEBUG로 설정\nexport SSH_MCP_LOG_LEVEL=DEBUG\n\n# 로그 파일에 출력\nexport SSH_MCP_LOG_FILE=ssh-mcp.log',
-            'list-connections': 'ssh_list_connections()'
+            'list-connections': 'ssh_list_connections()',
+            'example-connect': '158.180.71.210 서버에 연결해서 PHP 버전을 확인해줘',
+            'example-system': '서버의 시스템 정보를 종합적으로 분석해줘. CPU, 메모리, 디스크 사용량을 확인하고',
+            'example-files': '웹 루트 디렉토리의 파일들을 확인하고, config.php 파일을 읽어서 내용을 분석해줘',
+            'example-logs': 'Nginx 에러 로그를 분석해서 최근 오류들을 찾아주고, 해결 방안을 제시해줘',
+            'example-dev': 'PHP 프로젝트의 composer.json을 확인하고, 필요한 패키지들을 업데이트해줘',
+            'example-services': 'Docker 컨테이너들의 상태를 확인하고, 중단된 서비스가 있다면 재시작해줘',
+            'example-env': '${DEV_HOST} 서버에 ${DEV_USER}로 연결해서 작업해줘',
+            'example-workflow': '1. 서버에 연결하고 2. 백업을 만들고 3. 새 코드를 배포하고 4. 서비스를 재시작해줘',
+            'example-monitoring': '매일 아침 9시에 서버 상태를 체크하고 문제가 있으면 알려주는 스크립트를 만들어줘',
+            'convert-ssh-key': 'ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""',
+            'sshenv-json': '{\n  "servers": {\n    "development": {\n      "DEV_HOST": "192.168.1.100",\n      "DEV_USER": "ubuntu",\n      "DEV_PASSWORD": "your_password",\n      "DEV_KEY_PATH": "~/.ssh/id_rsa",\n      "DEV_PORT": 22\n    },\n    "staging": {\n      "STAGING_HOST": "staging.example.com",\n      "STAGING_USER": "deploy",\n      "STAGING_KEY_PATH": "~/.ssh/staging_key",\n      "STAGING_PORT": 22\n    },\n    "production": {\n      "PROD_HOST": "prod.example.com",\n      "PROD_USER": "admin",\n      "PROD_KEY_PATH": "~/.ssh/prod_key",\n      "PROD_PORT": 22\n    }\n  },\n  "defaults": {\n    "DEFAULT_PORT": 22,\n    "DEFAULT_TIMEOUT": 30\n  },\n  "templates": {\n    "web_server": {\n      "TEMPLATE_USER": "www-data",\n      "TEMPLATE_PORT": 22\n    }\n  }\n}',
+            'sshenv-keyvalue': '# 개발 서버\nDEV_HOST=192.168.1.100\nDEV_USER=ubuntu\nDEV_PASSWORD=your_password\nDEV_KEY_PATH=~/.ssh/id_rsa\n\n# 운영 서버  \nPROD_HOST=prod.example.com\nPROD_USER=admin\nPROD_KEY_PATH=~/.ssh/prod_key'
         };
 
         function copyToClipboard(button, textKey) {

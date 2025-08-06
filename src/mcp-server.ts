@@ -8,6 +8,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  InitializeRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 export class SSHMCPServer {
@@ -32,6 +33,20 @@ export class SSHMCPServer {
   }
 
   private setupHandlers(): void {
+    // Handle initialization
+    this.server.setRequestHandler(InitializeRequestSchema, async () => {
+      return {
+        protocolVersion: config.protocolVersion,
+        capabilities: {
+          tools: {},
+        },
+        serverInfo: {
+          name: config.serverName,
+          version: config.serverVersion,
+        },
+      };
+    });
+
     // Handle tool listing
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
@@ -44,7 +59,14 @@ export class SSHMCPServer {
       const { name, arguments: args } = request.params;
       try {
         const result = await this.executeTool(name, args || {});
-        return result;
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
       } catch (error) {
         throw new Error(error instanceof Error ? error.message : 'Tool execution failed');
       }
@@ -76,7 +98,6 @@ export class SSHMCPServer {
       throw error;
     }
   }
-
 
   async stop(): Promise<void> {
     this.logger.info('Stopping SSH MCP Server...');

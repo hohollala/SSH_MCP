@@ -1,102 +1,70 @@
 # SSH MCP Server
 
-A Model Context Protocol (MCP) server that enables AI clients like Claude Code, Gemini CLI, and Claude Desktop to perform SSH operations on remote Linux servers. This server provides secure, efficient remote server management through a standardized MCP interface.
+A Model Context Protocol (MCP) server that enables AI clients like Claude Code, Gemini CLI, and Claude Desktop to perform SSH operations on remote servers. This server provides secure, efficient remote server management through a standardized MCP interface.
 
 ## Features
 
-- **Multi-Client Support**: Compatible with Claude Code, Gemini CLI, and Claude Desktop
-- **Secure Authentication**: SSH key, password, and SSH agent authentication methods
-- **Connection Management**: Multiple concurrent SSH connections with unique identifiers
-- **Remote Operations**: Command execution, file operations, and directory management
-- **Error Handling**: Comprehensive error reporting and recovery mechanisms
-- **MCP Compliance**: Full Model Context Protocol and JSON-RPC 2.0 compliance
+- **🔗 SSH Connection Management**: Multiple concurrent SSH connections with unique identifiers
+- **⚡ Remote Command Execution**: Execute commands on remote servers with real-time output
+- **📁 File Operations**: Read, write, and list files on remote servers
+- **🔐 Secure Authentication**: SSH key (PEM format), password, and SSH agent authentication
+- **🛡️ Error Handling**: Comprehensive error reporting and recovery mechanisms
+- **📊 Connection Monitoring**: Real-time connection status and usage tracking
+- **🌐 Multi-Client Support**: Compatible with Claude Code, Gemini CLI, and Claude Desktop
+- **📝 Environment Variables**: JSON and KEY=VALUE format support for .sshenv files
 
 ## Installation
 
-### From PyPI (Recommended)
+### Prerequisites
 
-```bash
-pip install ssh-mcp-server
-```
+- Node.js 18.0.0 or higher
+- npm or yarn package manager
 
-### From Source
+### Quick Installation
 
-```bash
-git clone https://github.com/ssh-mcp-server/ssh-mcp-server.git
-cd ssh-mcp-server
-pip install -e .
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/hohollala/SSH_MCP.git
+   cd SSH_MCP
+   ```
 
-### Development Installation
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-git clone https://github.com/ssh-mcp-server/ssh-mcp-server.git
-cd ssh-mcp-server
-pip install -e ".[dev]"
-```
+3. **Build the project**
+   ```bash
+   npm run build
+   ```
 
-## Quick Start
+4. **Register with MCP clients**
 
-### 1. Basic Usage
+   **Using Claude CLI (Recommended):**
+   ```bash
+   # User-level registration
+   claude mcp add ssh-mcp -s user -- node "[installation-path]/dist/index.js"
+   
+   # Workspace-level registration  
+   claude mcp add ssh-mcp -s workspace -- node "[installation-path]/dist/index.js"
+   ```
 
-Start the MCP server:
+## Manual Configuration
 
-```bash
-ssh-mcp-server
-```
+Configure your MCP client by editing the configuration file:
 
-Or run as a Python module:
-
-```bash
-python -m ssh_mcp_server
-```
-
-### 2. MCP Client Configuration
-
-Configure your MCP client to use the SSH MCP server:
-
-#### Claude Code Configuration
-
-Add to your MCP settings:
+### Claude Desktop
+**Config file:** `%USERPROFILE%\.claude\settings.json` (Windows) / `~/.claude/settings.json` (macOS/Linux)
 
 ```json
 {
   "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[installation-path]/dist/index.js", "--stdin"],
       "env": {
-        "SSH_MCP_DEBUG": "false"
-      }
-    }
-  }
-}
-```
-
-#### Gemini CLI Configuration
-
-```json
-{
-  "mcpServers": {
-    "ssh-server": {
-      "command": "python",
-      "args": ["-m", "ssh_mcp_server"],
-      "env": {
-        "SSH_MCP_TIMEOUT": "30"
-      }
-    }
-  }
-}
-```
-
-#### Claude Desktop Configuration
-
-```json
-{
-  "mcpServers": {
-    "ssh-server": {
-      "command": "ssh-mcp-server",
-      "args": [],
-      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
         "SSH_MCP_MAX_CONNECTIONS": "10"
       }
     }
@@ -104,109 +72,113 @@ Add to your MCP settings:
 }
 ```
 
-## Available Tools
+### Claude Code
+**Config file:** `%USERPROFILE%\.claude-code\mcp.json` (Windows) / `~/.claude-code/mcp.json` (macOS/Linux)
 
-The SSH MCP Server provides the following tools:
-
-### Connection Management
-
-- **`ssh_connect`**: Establish SSH connection to a remote server
-- **`ssh_disconnect`**: Close an existing SSH connection
-- **`ssh_list_connections`**: List all active SSH connections
-
-### Command Execution
-
-- **`ssh_execute`**: Execute commands on remote servers
-
-### File Operations
-
-- **`ssh_read_file`**: Read files from remote servers
-- **`ssh_write_file`**: Write files to remote servers
-- **`ssh_list_directory`**: List directory contents on remote servers
-
-## Usage Examples
-
-### Connecting to a Server
-
-```python
-# Using SSH key authentication
+```json
 {
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "myuser",
-    "auth_method": "key",
-    "key_path": "~/.ssh/id_rsa"
-  }
-}
-
-# Using password authentication
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "myuser",
-    "auth_method": "password",
-    "password": "mypassword"
-  }
-}
-
-# Using SSH agent
-{
-  "name": "ssh_connect",
-  "arguments": {
-    "hostname": "example.com",
-    "username": "myuser",
-    "auth_method": "agent"
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[installation-path]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
   }
 }
 ```
 
-### Executing Commands
+### Cursor
+**Config file:** `%APPDATA%\Cursor\User\mcp.json` (Windows) / `~/.config/Cursor/User/mcp.json` (macOS/Linux)
 
-```python
+```json
 {
-  "name": "ssh_execute",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "command": "ls -la /home/user"
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[installation-path]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
   }
 }
 ```
 
-### File Operations
+### Gemini CLI
+**Config file:** `%USERPROFILE%\.gemini\settings.json` (Windows) / `~/.gemini/settings.json` (macOS/Linux)
 
-```python
-# Read a file
+```json
 {
-  "name": "ssh_read_file",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "file_path": "/etc/hostname"
-  }
-}
-
-# Write a file
-{
-  "name": "ssh_write_file",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "file_path": "/tmp/test.txt",
-    "content": "Hello, World!"
-  }
-}
-
-# List directory
-{
-  "name": "ssh_list_directory",
-  "arguments": {
-    "connection_id": "conn_12345",
-    "directory_path": "/home/user"
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "node",
+      "args": ["[installation-path]/dist/index.js", "--stdin"],
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
   }
 }
 ```
 
 ## Configuration
+
+### SSH Connection Configuration (.sshenv)
+
+Use the `ssh_init` tool to create a `.sshenv` file for managing SSH connection information:
+
+#### JSON Format (Recommended)
+```json
+{
+  "servers": {
+    "development": {
+      "DEV_HOST": "192.168.1.100",
+      "DEV_USER": "ubuntu",
+      "DEV_PASSWORD": "your_password",
+      "DEV_KEY_PATH": "~/.ssh/id_rsa",
+      "DEV_PORT": 22
+    },
+    "staging": {
+      "STAGING_HOST": "staging.example.com",
+      "STAGING_USER": "deploy",
+      "STAGING_KEY_PATH": "~/.ssh/staging_key",
+      "STAGING_PORT": 22
+    },
+    "production": {
+      "PROD_HOST": "prod.example.com",
+      "PROD_USER": "admin",
+      "PROD_KEY_PATH": "~/.ssh/prod_key",
+      "PROD_PORT": 22
+    }
+  },
+  "defaults": {
+    "DEFAULT_PORT": 22,
+    "DEFAULT_TIMEOUT": 30
+  }
+}
+```
+
+#### Traditional KEY=VALUE Format
+```bash
+# Development Server
+DEV_HOST=192.168.1.100
+DEV_USER=ubuntu
+DEV_PASSWORD=your_password
+DEV_KEY_PATH=~/.ssh/id_rsa
+
+# Production Server  
+PROD_HOST=prod.example.com
+PROD_USER=admin
+PROD_KEY_PATH=~/.ssh/prod_key
+```
 
 ### Environment Variables
 
@@ -215,123 +187,230 @@ The SSH MCP Server provides the following tools:
 - **`SSH_MCP_MAX_CONNECTIONS`**: Maximum concurrent connections (default: `10`)
 - **`SSH_MCP_LOG_LEVEL`**: Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`)
 
-### Configuration File
+## Available Tools
 
-Create a configuration file at `~/.ssh-mcp-server/config.json`:
+### Connection Management
+- **`ssh_connect`**: Establish SSH connection to a remote server
+- **`ssh_disconnect`**: Close an existing SSH connection  
+- **`ssh_list_connections`**: List all active SSH connections
 
-```json
-{
-  "max_connections": 10,
-  "default_timeout": 30,
-  "debug": false,
-  "log_level": "INFO",
-  "ssh_config": {
-    "host_key_policy": "auto_add",
-    "compression": true,
-    "keepalive_interval": 30
-  }
-}
+### Command Execution
+- **`ssh_execute_command`**: Execute commands on remote servers
+
+### File Operations
+- **`ssh_read_file`**: Read files from remote servers
+- **`ssh_write_file`**: Write files to remote servers
+- **`ssh_list_files`**: List directory contents on remote servers
+
+### Environment Setup
+- **`ssh_init`**: Initialize SSH environment configuration file
+
+## Usage Examples
+
+### With Claude Code
+
+```
+"Connect to the development server and check the PHP version"
+```
+
+```
+"Analyze the server's system information comprehensively. Check CPU, memory, and disk usage"
+```
+
+```
+"Check the files in the web root directory and read the config.php file to analyze its contents"
+```
+
+### Connection Examples
+
+#### SSH Key Authentication
+```javascript
+ssh_connect({
+  host: "192.168.1.100",
+  username: "admin",
+  privateKeyPath: "/path/to/private/key"
+})
+```
+
+#### Password Authentication
+```javascript
+ssh_connect({
+  host: "192.168.1.100", 
+  username: "admin",
+  password: "your_password"
+})
+```
+
+#### Using Environment Variables
+```javascript
+// Uses ${DEV_HOST}, ${DEV_USER}, ${DEV_PASSWORD} from .sshenv
+ssh_connect({
+  host: "${DEV_HOST}",
+  username: "${DEV_USER}",
+  password: "${DEV_PASSWORD}"
+})
+```
+
+### Command Execution
+```javascript
+ssh_execute_command({
+  connectionId: "admin@192.168.1.100:22",
+  command: "ls -la /home/admin"
+})
+```
+
+### File Operations
+```javascript
+// Read a file
+ssh_read_file({
+  connectionId: "admin@192.168.1.100:22",
+  path: "/etc/hosts"
+})
+
+// Write a file
+ssh_write_file({
+  connectionId: "admin@192.168.1.100:22",
+  path: "/tmp/test.txt",
+  content: "Hello, World!"
+})
 ```
 
 ## Authentication Methods
 
-### SSH Key Authentication
+### SSH Key Authentication (PEM Format Required)
 
-```python
-{
-  "auth_method": "key",
-  "key_path": "~/.ssh/id_rsa",
-  "key_passphrase": "optional_passphrase"  # Optional
-}
+SSH MCP Server supports PEM format SSH keys only. If you have OpenSSH format keys, convert them:
+
+```bash
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""
 ```
 
+**⚠️ Important:** This command converts your existing key to PEM format. Consider backing up your key first.
+
 Supported key types:
-- RSA
-- Ed25519
-- ECDSA
-- DSA
+- RSA (PEM format)
+- Ed25519 (converted to PEM)
+- ECDSA (converted to PEM)
 
 ### Password Authentication
 
-```python
-{
-  "auth_method": "password",
-  "password": "your_password"
-}
-```
+Direct password authentication is supported but SSH keys are recommended for better security.
 
 ### SSH Agent Authentication
 
-```python
-{
-  "auth_method": "agent"
-}
+Uses keys available in your SSH agent:
+
+```javascript
+ssh_connect({
+  host: "example.com",
+  username: "user",
+  useAgent: true
+})
 ```
 
-The server will use keys available in your SSH agent.
+## Troubleshooting
+
+### Common Issues
+
+**Connection Failures:**
+- Verify host address and port
+- Check username and authentication credentials
+- Ensure SSH service is running on remote server
+- Check firewall settings
+
+**Authentication Failures:**
+- Verify password accuracy
+- Ensure SSH key is in PEM format
+- Check key passphrase
+- Verify SSH agent is running
+
+**SSH Key Format Issues:**
+Convert OpenSSH keys to PEM format:
+```bash
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""
+```
+
+### Testing Installation
+
+```bash
+# Check version
+node dist/index.js --version
+
+# Test basic functionality
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js --stdin
+
+# Verify MCP registration
+claude mcp list
+```
+
+### Debug Mode
+
+Enable debug logging for troubleshooting:
+
+```bash
+export SSH_MCP_LOG_LEVEL=DEBUG
+export SSH_MCP_DEBUG=true
+```
 
 ## Development
 
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=ssh_mcp_server
-
-# Run integration tests
-pytest tests/test_*_integration.py
-
-# Run compatibility tests
-pytest tests/test_mcp_client_compatibility.py
+### Project Structure
+```
+SSH_MCP/
+├── src/
+│   ├── index.ts           # Entry point
+│   ├── mcp-server.ts      # MCP server implementation
+│   ├── connection-manager.ts # SSH connection management
+│   ├── tools.ts           # MCP tools implementation
+│   ├── env-parser.ts      # Environment variable parser
+│   └── types.ts           # TypeScript type definitions
+├── dist/                  # Compiled JavaScript
+├── docs/                  # Documentation
+└── README.md
 ```
 
-### Code Quality
+### Build Commands
 
 ```bash
-# Format code
-black ssh_mcp_server tests
+# Development build
+npm run build
 
-# Sort imports
-isort ssh_mcp_server tests
+# Watch mode for development
+npm run build:watch
 
-# Type checking
-mypy ssh_mcp_server
-
-# Linting
-flake8 ssh_mcp_server tests
+# Clean build
+npm run clean && npm run build
 ```
 
-### Building Documentation
+### Testing
 
 ```bash
-# Install docs dependencies
-pip install -e ".[docs]"
+# Run basic functionality test
+npm test
 
-# Build documentation
-cd docs
-make html
+# Test with debug output
+SSH_MCP_DEBUG=true npm test
 ```
 
-## Documentation
+## Security Best Practices
 
-### Quick Links
+### SSH Key Management
+- Use SSH keys instead of passwords when possible
+- Store private keys securely with appropriate file permissions (600)
+- Use passphrases for additional key protection
+- Regularly rotate SSH keys
 
-- **[Installation Guide](docs/INSTALLATION.md)** - Detailed installation instructions for all platforms
-- **[API Documentation](docs/API.md)** - Complete tool reference and parameter specifications
-- **[Client Configurations](docs/CLIENT_CONFIGURATIONS.md)** - MCP client setup examples and configurations
-- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
-- **[Usage Examples](examples/usage_examples.py)** - Practical usage examples and workflows
+### Environment Security
+- Add `.sshenv` to `.gitignore` (automatically done by `ssh_init`)
+- Never commit authentication credentials to version control
+- Use environment variables for sensitive data
+- Implement proper access controls on configuration files
 
-### Getting Started
-
-1. **Install**: Follow the [Installation Guide](docs/INSTALLATION.md)
-2. **Configure**: Set up your MCP client using [Client Configurations](docs/CLIENT_CONFIGURATIONS.md)
-3. **Learn**: Try the [Usage Examples](examples/usage_examples.py)
-4. **Reference**: Use the [API Documentation](docs/API.md) for detailed tool information
-5. **Troubleshoot**: Check the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) if you encounter issues
+### Connection Security
+- Use non-standard SSH ports when possible
+- Implement connection timeouts
+- Monitor and log SSH access
+- Use SSH agent for key management
 
 ## Contributing
 
@@ -347,6 +426,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/ssh-mcp-server/ssh-mcp-server/issues)
-- **Documentation**: [Read the Docs](https://ssh-mcp-server.readthedocs.io/)
-- **Discussions**: [GitHub Discussions](https://github.com/ssh-mcp-server/ssh-mcp-server/discussions)
+- **Issues**: [GitHub Issues](https://github.com/hohollala/SSH_MCP/issues)
+- **Documentation**: [Complete Documentation](docs/index.html)
+- **Repository**: [GitHub Repository](https://github.com/hohollala/SSH_MCP)
+
+## Version
+
+Current Version: 0.1.0
+
+---
+
+**Note**: This is a Node.js/TypeScript implementation of SSH MCP Server, designed for seamless integration with AI clients for remote server management.

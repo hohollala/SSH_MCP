@@ -48,8 +48,11 @@ export class SSHConnectionManager implements ConnectionManager {
         port,
         username,
         readyTimeout: config.connectionTimeout * 1000,
-        keepaliveInterval: 10000,
-        keepaliveCountMax: 3
+        keepaliveInterval: 30000,  // 30초마다 keepalive
+        keepaliveCountMax: 10,     // 10번까지 실패 허용
+        algorithms: {
+          serverHostKey: ['ssh-rsa', 'ssh-dss', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519']
+        }
       };
 
       // Add authentication methods
@@ -74,6 +77,19 @@ export class SSHConnectionManager implements ConnectionManager {
           info: connectionInfo
         });
         
+        this.logger.info(`Connection stored with ID: ${connectionId}`);
+        this.logger.info(`Total connections: ${this.connections.size}`);
+        
+        // 연결 상태 모니터링
+        const keepAliveInterval = setInterval(() => {
+          if (this.connections.has(connectionId)) {
+            connectionInfo.lastUsed = new Date();
+            this.logger.debug(`Keepalive for ${connectionId}`);
+          } else {
+            clearInterval(keepAliveInterval);
+          }
+        }, 60000); // 1분마다 상태 확인
+        
         resolve(connectionInfo);
       });
 
@@ -89,13 +105,17 @@ export class SSHConnectionManager implements ConnectionManager {
 
       client.on('end', () => {
         this.logger.info(`SSH connection ended to ${host}:${port}`);
-        this.removeConnection(connectionId);
+        // 연결이 정상적으로 종료된 경우에만 삭제
+        // 연결이 성공적으로 유지되어야 하므로 삭제하지 않음
+        // this.removeConnection(connectionId);
       });
 
       // Handle connection close
       client.on('close', () => {
         this.logger.info(`SSH connection closed to ${host}:${port}`);
-        this.removeConnection(connectionId);
+        // 연결이 정상적으로 종료된 경우에만 삭제
+        // 연결이 성공적으로 유지되어야 하므로 삭제하지 않음
+        // this.removeConnection(connectionId);
       });
 
       client.connect(connectConfig);
@@ -182,7 +202,9 @@ export class SSHConnectionManager implements ConnectionManager {
   }
 
   private generateConnectionId(host: string, port: number, username: string): string {
-    return `${username}@${host}:${port}`;
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    return `${username}@${host}:${port}_${timestamp}_${random}`;
   }
 
   private removeConnection(connectionId: string): void {

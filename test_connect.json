@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","method":"tools/call","params":{"name":"ssh_connect","arguments":{"hostname":"158.180.71.210","username":"ubuntu","port":22,"auth_method":"key","key_path":"E:/AIProjects/ssh_Test/docs/first.pem"}},"id":1}

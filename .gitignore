@@ -71,3 +71,6 @@ Thumbs.db
 
 # Yarn Integrity file
 .yarn-integrity
+# SSH MCP Server
+.sshenv
+*.sshenv

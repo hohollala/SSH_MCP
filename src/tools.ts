@@ -22,15 +22,16 @@ export class SSHTools {
   constructor(connectionManager: SSHConnectionManager) {
     this.connectionManager = connectionManager;
     this.envParser = new EnvParser();
-    this.initializeEnvParser();
+    // 비동기 초기화는 필요할 때 수행
   }
 
-  private async initializeEnvParser(): Promise<void> {
-    try {
-      await this.envParser.loadEnvFile();
-    } catch (error) {
-      // 환경 파일 로드 실패는 치명적이지 않음
-      this.logger.debug('Environment file not loaded on startup');
+  private async ensureEnvParserInitialized(): Promise<void> {
+    if (!this.envParser.isEnvLoaded()) {
+      try {
+        await this.envParser.loadEnvFile();
+      } catch (error) {
+        this.logger.debug('Environment file not loaded');
+      }
     }
   }
 
@@ -59,9 +60,9 @@ export class SSHTools {
             type: 'string',
             description: 'Password for authentication (if using password auth)'
           },
-          privateKey: {
+          privateKeyPath: {
             type: 'string',
-            description: 'Private key for authentication (if using key auth)'
+            description: 'Path to private key file for authentication (if using key auth)'
           },
           passphrase: {
             type: 'string',
@@ -234,6 +235,10 @@ export class SSHTools {
             description: 'Path where to create .sshenv file (default: current directory)',
             default: '.'
           },
+          clientPath: {
+            type: 'string',
+            description: 'The absolute path of the client\'s working directory. If not provided, the server\'s working directory will be used.'
+          },
           force: {
             type: 'boolean',
             description: 'Overwrite existing .sshenv file',
@@ -251,20 +256,35 @@ export class SSHTools {
 
   // Tool execution methods
   async executeSSHConnect(args: any): Promise<SSHConnection> {
+    // 환경변수 초기화 보장
+    await this.ensureEnvParserInitialized();
+    
     // 환경변수 치환
     const expandedArgs = this.envParser.expandObjectVariables(args);
-    const { host, port = 22, username, password, privateKey, passphrase, useAgent = false } = expandedArgs;
+    const { hostname, host, port = 22, username, password, privateKeyPath, passphrase, useAgent = false } = expandedArgs;
+    
+    // hostname 또는 host 중 하나 사용
+    const targetHost = hostname || host;
 
-    this.logger.debug('SSH Connect with expanded args:', { host, port, username, useAgent });
+    this.logger.debug('SSH Connect with expanded args:', { host: targetHost, port, username, useAgent });
 
     const auth: SSHAuthConfig = {};
     if (password) auth.password = password;
-    if (privateKey) auth.privateKey = privateKey;
+    if (privateKeyPath) {
+      try {
+        const privateKey = await fs.readFile(privateKeyPath, 'utf8');
+        auth.privateKey = privateKey;
+        this.logger.debug(`Loaded private key from: ${privateKeyPath}`);
+      } catch (error) {
+        this.logger.error(`Failed to read private key file: ${privateKeyPath}`, error);
+        throw ErrorFactory.connectionFailed(targetHost, port, { error: `Failed to read private key: ${error}` });
+      }
+    }
     if (passphrase) auth.passphrase = passphrase;
     if (useAgent) auth.agent = true;
 
-    this.logger.info(`Connecting to ${username}@${host}:${port}`);
-    return await this.connectionManager.connect(host, port, username, auth);
+    this.logger.info(`Connecting to ${username}@${targetHost}:${port}`);
+    return await this.connectionManager.connect(targetHost, port, username, auth);
   }
 
   async executeSSHExecuteCommand(args: any): Promise<SSHCommandResult> {
@@ -283,7 +303,7 @@ export class SSHTools {
 
   async executeSSHListConnections(): Promise<SSHConnection[]> {
     this.logger.info('Listing SSH connections');
-    return this.connectionManager.listConnections();
+    return Promise.resolve(this.connectionManager.listConnections());
   }
 
   async executeSSHDisconnect(args: any): Promise<{ success: boolean }> {
@@ -384,10 +404,14 @@ export class SSHTools {
     sshenvPath: string;
     gitignoreUpdated?: boolean;
   }> {
-    const { path = '.', force = false, addGitignore = true } = args;
+    const { path = '.', clientPath, force = false, addGitignore = true } = args;
     
-    const sshenvPath = join(path, '.sshenv');
-    const gitignorePath = join(path, '.gitignore');
+    // clientPath가 제공되면 그것을 사용, 아니면 환경변수나 현재 작업 디렉토리 사용
+    const basePath = clientPath || process.env.MCP_CLIENT_CWD || process.cwd();
+    
+    // path가 '.'이면 basePath에 직접 생성, 아니면 하위 디렉토리에 생성
+    const sshenvPath = path === '.' ? join(basePath, '.sshenv') : join(basePath, path, '.sshenv');
+    const gitignorePath = path === '.' ? join(basePath, '.gitignore') : join(basePath, path, '.gitignore');
     
     this.logger.info(`Initializing SSH environment at: ${sshenvPath}`);
     

@@ -13,19 +13,30 @@ export class EnvParser {
   }
 
   /**
-   * .sshenv 파일을 로드하여 환경변수를 파싱합니다
+   * .sshenv 파일을 로드하여 환경변수를 파싱합니다 (JSON 또는 기존 형식)
    */
   async loadEnvFile(): Promise<void> {
     try {
       const content = await fs.readFile(this.envFilePath, 'utf8');
-      this.parseEnvContent(content);
+      
+      // JSON 형식인지 확인
+      const trimmedContent = content.trim();
+      if (trimmedContent.startsWith('{') && trimmedContent.endsWith('}')) {
+        this.parseJsonEnvContent(content);
+      } else {
+        this.parseEnvContent(content);
+      }
+      
       this.isLoaded = true;
       this.logger.info(`Loaded SSH environment variables from: ${this.envFilePath}`);
       this.logger.debug(`Loaded ${this.envVars.size} environment variables`);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         this.logger.warn(`SSH environment file not found: ${this.envFilePath}`);
-        this.logger.info('Use "init" command to create .sshenv file');
+        this.logger.info('Use "ssh_init" command to create .sshenv file');
+        // 파일이 없으면 빈 상태로 처리하고 계속 진행
+        this.isLoaded = true;
+        return;
       } else {
         this.logger.error('Failed to load SSH environment file:', error);
         throw error;
@@ -34,7 +45,51 @@ export class EnvParser {
   }
 
   /**
-   * 환경변수 파일 내용을 파싱합니다
+   * JSON 형식의 환경변수 파일 내용을 파싱합니다
+   */
+  private parseJsonEnvContent(content: string): void {
+    try {
+      const jsonData = JSON.parse(content);
+      
+      // servers 섹션에서 변수 추출
+      if (jsonData.servers && typeof jsonData.servers === 'object') {
+        for (const serverGroup of Object.values(jsonData.servers)) {
+          if (typeof serverGroup === 'object' && serverGroup !== null) {
+            for (const [key, value] of Object.entries(serverGroup)) {
+              if (typeof value === 'string' && value !== '') {
+                this.envVars.set(key, value);
+                this.logger.debug(`Loaded env var from JSON: ${key}=${value ? '[SET]' : '[EMPTY]'}`);
+              } else if (typeof value === 'number') {
+                this.envVars.set(key, value.toString());
+                this.logger.debug(`Loaded env var from JSON: ${key}=${value}`);
+              }
+            }
+          }
+        }
+      }
+      
+      // defaults 섹션에서 변수 추출
+      if (jsonData.defaults && typeof jsonData.defaults === 'object') {
+        for (const [key, value] of Object.entries(jsonData.defaults)) {
+          if (typeof value === 'string' && value !== '') {
+            this.envVars.set(key, value);
+            this.logger.debug(`Loaded default var from JSON: ${key}=${value}`);
+          } else if (typeof value === 'number' || typeof value === 'boolean') {
+            this.envVars.set(key, value.toString());
+            this.logger.debug(`Loaded default var from JSON: ${key}=${value}`);
+          }
+        }
+      }
+      
+      this.logger.info(`Parsed JSON environment file with ${this.envVars.size} variables`);
+    } catch (error) {
+      this.logger.error('Failed to parse JSON environment file:', error);
+      throw new Error(`Invalid JSON in .sshenv file: ${error}`);
+    }
+  }
+
+  /**
+   * 기존 형식의 환경변수 파일 내용을 파싱합니다 (KEY=VALUE)
    */
   private parseEnvContent(content: string): void {
     const lines = content.split('\n');
@@ -60,8 +115,13 @@ export class EnvParser {
       // 따옴표 제거
       const cleanValue = this.removeQuotes(value);
       
-      this.envVars.set(key, cleanValue);
-      this.logger.debug(`Loaded env var: ${key}=${cleanValue ? '[SET]' : '[EMPTY]'}`);
+      // 빈 문자열인 경우 저장하지 않음
+      if (cleanValue !== '') {
+        this.envVars.set(key, cleanValue);
+        this.logger.debug(`Loaded env var: ${key}=[SET]`);
+      } else {
+        this.logger.debug(`Skipped empty env var: ${key}`);
+      }
     }
   }
 
@@ -97,7 +157,7 @@ export class EnvParser {
       
       if (value === '') {
         this.logger.warn(`Environment variable is empty: ${varName}`);
-        return '';
+        return match; // 빈 값이면 원본 문자열 유지 (치환하지 않음)
       }
       
       this.logger.debug(`Expanded \${${varName}} -> ${value}`);

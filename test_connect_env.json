@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","method":"tools/call","params":{"name":"ssh_connect","arguments":{"hostname":"${DEV_HOST}","username":"${DEV_USER}","port":22,"auth_method":"key","key_path":"${DEV_KEY_PATH}"}},"id":1}

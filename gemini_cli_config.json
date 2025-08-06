@@ -1,0 +1,28 @@
+{
+  "selectedAuthType": "oauth-personal",
+  "autoModelSwitch": false,
+  "preferredEditor": "vscode",
+  "theme": "GitHub",
+  "mcpServers": {
+    "shrimp-task-manager": {
+      "command": "node",
+      "args": [
+        "E:\\MCPProjects\\mcp-shrimp-task-manager\\dist\\index.js"
+      ],
+      "env": {
+        "TEMPLATES_USE": "ko",
+        "ENABLE_GUI": "false"
+      }
+    },
+    "ssh-mcp":{
+      "command": "node",
+      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js", "--stdin"],
+      "cwd": "E:\\MCPProjects\\SSH_MCP",
+      "env": {
+        "SSH_MCP_DEBUG": "false",
+        "SSH_MCP_TIMEOUT": "30",
+        "SSH_MCP_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+} 

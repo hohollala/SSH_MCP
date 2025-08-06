@@ -45,7 +45,7 @@ class ConfigManager {
   private loadConfig(): ServerConfig {
     return {
       // Server configuration
-      debug: this.getBoolEnv('SSH_MCP_DEBUG', false),
+      debug: this.getBoolEnv('SSH_MCP_DEBUG', true),
       maxConnections: this.getIntEnv('SSH_MCP_MAX_CONNECTIONS', 10),
       timeout: this.getIntEnv('SSH_MCP_TIMEOUT', 30),
       logLevel: this.getEnv('SSH_MCP_LOG_LEVEL', 'INFO'),
