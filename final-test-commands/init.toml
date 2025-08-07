@@ -1,0 +1,71 @@
+description="SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_init, Read, Write]
+description: "SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성"
+---
+
+# /ssh:init - SSH Init - SSH 환경 초기화
+
+## Purpose
+SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성하고 환경을 구성합니다.
+
+## Usage
+```
+/ssh:init [--path .] [--force] [--addGitignore]
+```
+
+## Arguments
+- `--path` (선택, 기본값: ".") - .sshenv 파일을 생성할 경로
+- `--force` (선택, 기본값: false) - 기존 파일 덮어쓰기 여부
+- `--addGitignore` (선택, 기본값: true) - .gitignore에 .sshenv 추가 여부
+
+## Execution
+1. 지정된 경로의 디렉토리 유효성 확인
+2. 기존 .sshenv 파일 존재 여부 확인
+3. .sshenv 템플릿 파일 생성
+4. .gitignore 파일 업데이트 (옵션)
+5. 초기화 완료 상태 및 파일 경로 반환
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_init for environment initialization
+- Leverages Read for existing file checking
+- Applies Write for configuration file creation
+- Maintains proper file permissions and security
+
+## 예시
+```json
+{
+  "path": ".",
+  "force": false,
+  "addGitignore": true
+}
+```
+
+## 반환값
+초기화 성공 여부와 생성된 파일 경로를 반환합니다.
+
+## .sshenv 파일 사용법
+생성된 .sshenv 파일에 서버별 환경변수를 설정하고, MCP 명령어에서 ${VAR_NAME} 형태로 참조하세요.
+
+### 예시 설정
+```env
+DEV_HOST=192.168.1.100
+DEV_USER=ubuntu
+DEV_PASSWORD=your_password
+```
+
+### 예시 사용
+```json
+{
+  "host": "${DEV_HOST}",
+  "username": "${DEV_USER}",
+  "password": "${DEV_PASSWORD}"
+}
+```
+
+## 보안 주의사항
+- .sshenv 파일을 git에 커밋하지 마세요
+- 가능하면 password 대신 SSH 키를 사용하세요
+- 파일 권한을 600으로 설정하세요: `chmod 600 .sshenv`
+"""

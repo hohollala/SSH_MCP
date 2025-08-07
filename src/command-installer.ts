@@ -66,8 +66,14 @@ export class CommandInstaller {
     const skippedFiles: string[] = [];
     const overwrittenFiles: string[] = [];
 
+    // 모든 템플릿 파일 목록 로깅
+    const templateFiles = Object.keys(commandTemplates);
+    this.logger.info(`Processing ${templateFiles.length} template files: ${templateFiles.join(', ')}`);
+
     for (const [filename, content] of Object.entries(commandTemplates)) {
       const filePath = join(this.commandsDir, filename);
+      
+      this.logger.debug(`Processing template: ${filename}`);
       
       try {
         // 파일이 이미 존재하는지 확인

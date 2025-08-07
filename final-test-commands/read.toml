@@ -1,0 +1,47 @@
+description="SSH 연결을 통해 원격 서버의 파일을 읽기"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_read_file, Read]
+description: "SSH 연결을 통해 원격 서버의 파일을 읽기"
+---
+
+# /ssh:read - SSH Read - 파일 읽기
+
+## Purpose
+SSH 연결을 통해 원격 서버의 파일을 안전하게 읽고 내용을 반환합니다.
+
+## Usage
+```
+/ssh:read [connectionId] [path] [--encoding utf8]
+```
+
+## Arguments
+- `connectionId` (필수) - 사용할 연결 ID
+- `path` (필수) - 읽을 파일 경로
+- `--encoding` (선택, 기본값: utf8) - 파일 인코딩
+
+## Execution
+1. 연결 ID 유효성 검증 및 상태 확인
+2. 파일 경로 유효성 및 접근 권한 확인
+3. 원격 파일 읽기 및 내용 검증
+4. 지정된 인코딩으로 내용 디코딩
+5. 파일 내용 및 메타데이터 반환
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_read_file for secure file reading
+- Leverages Read for file content processing
+- Maintains proper file access permissions
+- Ensures secure file transfer with error handling
+
+## 예시
+```json
+{
+  "connectionId": "conn_123456",
+  "path": "/home/ubuntu/config.txt",
+  "encoding": "utf8"
+}
+```
+
+## 반환값
+파일 내용을 반환합니다.
+"""

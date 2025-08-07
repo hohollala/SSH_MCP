@@ -1,0 +1,48 @@
+description="SSH 연결을 통해 원격 서버에 파일을 쓰기"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_write_file, Read, Write]
+description: "SSH 연결을 통해 원격 서버에 파일을 쓰기"
+---
+
+# /ssh:write - SSH Write - 파일 쓰기
+
+## Purpose
+SSH 연결을 통해 원격 서버에 파일을 안전하게 작성하고 저장합니다.
+
+## Usage
+```
+/ssh:write [connectionId] [path] [content] [--encoding utf8]
+```
+
+## Arguments
+- `connectionId` (필수) - 사용할 연결 ID
+- `path` (필수) - 저장할 파일 경로
+- `content` (필수) - 파일 내용
+- `--encoding` (선택, 기본값: utf8) - 파일 인코딩
+
+## Execution
+1. 연결 ID 유효성 검증 및 상태 확인
+2. 파일 경로 유효성 및 쓰기 권한 확인
+3. 파일 내용 인코딩 및 전송 준비
+4. 원격 서버에 파일 작성
+5. 파일 쓰기 결과 및 상태 반환
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_write_file for secure file writing
+- Leverages Read for file content validation
+- Applies Write for file creation and modification
+- Maintains secure file transfer with proper error handling
+
+## 예시
+```json
+{
+  "connectionId": "conn_123456",
+  "path": "/home/ubuntu/output.txt",
+  "content": "Hello World!"
+}
+```
+
+## 반환값
+파일 쓰기 성공 메시지를 반환합니다.
+"""

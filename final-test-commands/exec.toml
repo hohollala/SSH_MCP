@@ -1,0 +1,48 @@
+description="SSH 연결을 통해 원격 서버에서 명령을 실행"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_execute_command, Read, Write]
+description: "SSH 연결을 통해 원격 서버에서 명령을 실행"
+---
+
+# /ssh:exec - SSH Exec - 원격 명령 실행
+
+## Purpose
+SSH 연결을 통해 원격 서버에서 명령을 실행하고 결과를 반환합니다.
+
+## Usage
+```
+/ssh:exec [connectionId] [command] [--cwd path] [--timeout seconds]
+```
+
+## Arguments
+- `connectionId` (필수) - 사용할 연결 ID
+- `command` (필수) - 실행할 명령어
+- `--cwd` (선택) - 작업 디렉토리
+- `--timeout` (선택, 기본값: 60) - 타임아웃(초)
+
+## Execution
+1. 연결 ID 유효성 검증 및 상태 확인
+2. 명령어 실행 환경 준비 및 설정
+3. 원격 서버에서 명령 실행
+4. 실시간 출력 스트림 처리
+5. 실행 결과 및 종료 코드 반환
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_execute_command for remote command execution
+- Leverages Read for command output processing
+- Applies Write for command logging and result storage
+- Maintains secure command execution with proper error handling
+
+## 예시
+```json
+{
+  "connectionId": "conn_123456",
+  "command": "ls -la",
+  "cwd": "/home/ubuntu"
+}
+```
+
+## 반환값
+명령 실행 결과와 출력을 반환합니다.
+"""

@@ -3,6 +3,7 @@ import { SSHConnectionManager } from './connection-manager.js';
 import { ErrorFactory } from './errors.js';
 import { EnvParser } from './env-parser.js';
 import { sshenvTemplate, gitignoreEntry } from './sshenv-template.js';
+import { geminiCommandTemplates } from './command-templates.js';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { 
@@ -254,6 +255,29 @@ export class SSHTools {
     };
   }
 
+  // Generate Gemini Commands Tool
+  getSSHGenerateGeminiTool(): MCPTool {
+    return {
+      name: 'ssh_generate_gemini',
+      description: 'Generate Gemini CLI SSH command TOML files',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: {
+            type: 'string',
+            description: 'Path where to create TOML files (default: ~/.gemini/commands/ssh)',
+            default: '~/.gemini/commands/ssh'
+          },
+          force: {
+            type: 'boolean',
+            description: 'Overwrite existing files',
+            default: false
+          }
+        }
+      }
+    };
+  }
+
   // Tool execution methods
   async executeSSHConnect(args: any): Promise<SSHConnection> {
     // 환경변수 초기화 보장
@@ -404,65 +428,147 @@ export class SSHTools {
     sshenvPath: string;
     gitignoreUpdated?: boolean;
   }> {
-    const { path = '.', clientPath, force = false, addGitignore = true } = args;
-    
-    // clientPath가 제공되면 그것을 사용, 아니면 환경변수나 현재 작업 디렉토리 사용
-    const basePath = clientPath || process.env.MCP_CLIENT_CWD || process.cwd();
-    
-    // path가 '.'이면 basePath에 직접 생성, 아니면 하위 디렉토리에 생성
-    const sshenvPath = path === '.' ? join(basePath, '.sshenv') : join(basePath, path, '.sshenv');
-    const gitignorePath = path === '.' ? join(basePath, '.gitignore') : join(basePath, path, '.gitignore');
-    
-    this.logger.info(`Initializing SSH environment at: ${sshenvPath}`);
-    
     try {
-      // .sshenv 파일 존재 확인
-      const sshenvExists = await this.fileExists(sshenvPath);
+      const { path = '.', clientPath, force = false, addGitignore = true } = args;
       
-      if (sshenvExists && !force) {
+      // Determine the actual path to use
+      const actualPath = clientPath || path;
+      const sshenvPath = join(actualPath, '.sshenv');
+      
+      this.logger.info(`Initializing SSH environment at: ${sshenvPath}`);
+      
+      // Check if .sshenv already exists
+      if (await this.fileExists(sshenvPath) && !force) {
         return {
           success: false,
-          message: '.sshenv file already exists. Use "force: true" to overwrite.',
+          message: '.sshenv file already exists. Use --force to overwrite.',
           sshenvPath
         };
       }
       
-      // .sshenv 파일 생성
-      await fs.writeFile(sshenvPath, sshenvTemplate, 'utf8');
-      this.logger.info('Created .sshenv file');
+      // Create directory if it doesn't exist
+      try {
+        await fs.mkdir(actualPath, { recursive: true });
+      } catch (error) {
+        this.logger.error(`Failed to create directory: ${actualPath}`, error);
+        return {
+          success: false,
+          message: `Failed to create directory: ${actualPath}`,
+          sshenvPath
+        };
+      }
       
+      // Write .sshenv file
+      try {
+        await fs.writeFile(sshenvPath, sshenvTemplate, 'utf8');
+        this.logger.info(`Created .sshenv file at: ${sshenvPath}`);
+      } catch (error) {
+        this.logger.error(`Failed to write .sshenv file: ${sshenvPath}`, error);
+        return {
+          success: false,
+          message: `Failed to write .sshenv file: ${sshenvPath}`,
+          sshenvPath
+        };
+      }
+      
+      // Update .gitignore if requested
       let gitignoreUpdated = false;
-      
-      // .gitignore 업데이트
       if (addGitignore) {
+        const gitignorePath = join(actualPath, '.gitignore');
         gitignoreUpdated = await this.updateGitignore(gitignorePath);
       }
       
-      // 파일 권한 설정 (Unix 시스템에서만)
-      if (process.platform !== 'win32') {
-        try {
-          await fs.chmod(sshenvPath, 0o600);
-          this.logger.info('Set .sshenv file permissions to 600');
-        } catch (error) {
-          this.logger.warn('Failed to set file permissions:', error);
-        }
-      }
-      
-      const message = sshenvExists ? 
-        'SSH environment file recreated successfully' : 
-        'SSH environment file created successfully';
-      
       return {
         success: true,
-        message,
+        message: `SSH environment initialized successfully. Created .sshenv at: ${sshenvPath}`,
         sshenvPath,
         gitignoreUpdated
       };
       
     } catch (error) {
-      this.logger.error('Failed to initialize SSH environment:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      throw ErrorFactory.fileOperationFailed('create', sshenvPath, { error: errorMessage });
+      this.logger.error('Failed to initialize SSH environment', error);
+      return {
+        success: false,
+        message: `Failed to initialize SSH environment: ${error}`,
+        sshenvPath: ''
+      };
+    }
+  }
+
+  async executeSSHGenerateGemini(args: any): Promise<{
+    success: boolean;
+    message: string;
+    generatedFiles: string[];
+    targetPath: string;
+  }> {
+    try {
+      const { path = '~/.gemini/commands/ssh', force = false } = args;
+      
+      // Expand ~ to home directory
+      const expandedPath = path.replace(/^~/, process.env.HOME || process.env.USERPROFILE || '');
+      const targetPath = join(expandedPath);
+      
+      this.logger.info(`Generating Gemini CLI commands at: ${targetPath}`);
+      
+      // Create directory if it doesn't exist
+      try {
+        await fs.mkdir(targetPath, { recursive: true });
+        this.logger.info(`Created directory: ${targetPath}`);
+      } catch (error) {
+        this.logger.error(`Failed to create directory: ${targetPath}`, error);
+        return {
+          success: false,
+          message: `Failed to create directory: ${targetPath}`,
+          generatedFiles: [],
+          targetPath
+        };
+      }
+      
+      const generatedFiles: string[] = [];
+      
+      // Generate TOML files from templates
+      for (const [filename, template] of Object.entries(geminiCommandTemplates)) {
+        const filePath = join(targetPath, filename);
+        
+        // Check if file already exists
+        if (await this.fileExists(filePath) && !force) {
+          this.logger.warn(`File already exists, skipping: ${filename}`);
+          continue;
+        }
+        
+        try {
+          await fs.writeFile(filePath, template, 'utf8');
+          generatedFiles.push(filename);
+          this.logger.info(`Generated: ${filename}`);
+        } catch (error) {
+          this.logger.error(`Failed to write file: ${filename}`, error);
+        }
+      }
+      
+      if (generatedFiles.length === 0) {
+        return {
+          success: false,
+          message: 'No files were generated. All files already exist and --force was not specified.',
+          generatedFiles: [],
+          targetPath
+        };
+      }
+      
+      return {
+        success: true,
+        message: `Successfully generated ${generatedFiles.length} Gemini CLI command files at: ${targetPath}`,
+        generatedFiles,
+        targetPath
+      };
+      
+    } catch (error) {
+      this.logger.error('Failed to generate Gemini CLI commands', error);
+      return {
+        success: false,
+        message: `Failed to generate Gemini CLI commands: ${error}`,
+        generatedFiles: [],
+        targetPath: ''
+      };
     }
   }
 
@@ -517,7 +623,8 @@ export class SSHTools {
       this.getSSHReadFileTool(),
       this.getSSHWriteFileTool(),
       this.getSSHListFilesTool(),
-      this.getSSHInitTool()
+      this.getSSHInitTool(),
+      this.getSSHGenerateGeminiTool()
     ];
   }
 
@@ -540,6 +647,8 @@ export class SSHTools {
         return await this.executeSSHListFiles(args);
       case 'ssh_init':
         return await this.executeSSHInit(args);
+      case 'ssh_generate_gemini':
+        return await this.executeSSHGenerateGemini(args);
       default:
         throw ErrorFactory.methodNotFound(name);
     }

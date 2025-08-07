@@ -1,0 +1,45 @@
+description="활성화된 SSH 연결을 안전하게 해제"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_disconnect, Read]
+description: "활성화된 SSH 연결을 안전하게 해제"
+---
+
+# /ssh:disconnect - SSH Connection Termination
+
+## Purpose
+활성화된 SSH 연결을 안전하게 해제하고 리소스를 정리합니다.
+
+## Usage
+```
+/ssh:disconnect [connectionId] [--all] [--force]
+```
+
+## Arguments
+- `connectionId` (필수) - 해제할 연결의 ID
+- `--all` - 모든 활성 연결 해제
+- `--force` - 강제 연결 해제 (응답 대기 없음)
+
+## Execution
+1. 연결 ID 유효성 검증 및 상태 확인
+2. 활성 세션 및 프로세스 정리
+3. 안전한 연결 종료 및 리소스 해제
+4. 연결 상태 업데이트 및 로그 기록
+5. 정리 결과 및 상태 보고
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_disconnect for secure connection termination
+- Leverages Read for connection status verification
+- Maintains proper session cleanup and resource management
+- Ensures graceful disconnection with error handling
+
+## 예시
+```json
+{
+  "connectionId": "conn_123456"
+}
+```
+
+## 반환값
+연결 해제 성공 메시지를 반환합니다.
+"""

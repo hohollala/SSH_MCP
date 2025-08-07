@@ -1,0 +1,43 @@
+description="현재 활성화된 모든 SSH 연결 목록을 조회"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_list_connections, Read]
+description: "현재 활성화된 모든 SSH 연결 목록을 조회"
+---
+
+# /ssh:list-connections - Active SSH Connections
+
+## Purpose
+현재 활성화된 모든 SSH 연결의 상태와 정보를 조회하고 관리합니다.
+
+## Usage
+```
+/ssh:list-connections [--status active|inactive|all] [--format table|json]
+```
+
+## Arguments
+- `--status` - 연결 상태 필터 (active, inactive, all)
+- `--format` - 출력 형식 (table, json)
+- `--detail` - 상세 정보 포함 여부
+
+## Execution
+1. 현재 세션의 모든 연결 상태 스캔
+2. 연결별 상태 및 메타데이터 수집
+3. 필터 조건 적용 및 정렬
+4. 지정된 형식으로 결과 포맷팅
+5. 연결 통계 및 요약 정보 제공
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_list_connections for connection enumeration
+- Leverages Read for connection metadata processing
+- Maintains comprehensive connection state tracking
+- Provides formatted output with filtering options
+
+## 예시
+```json
+{}
+```
+
+## 반환값
+활성 연결 목록, 상태 정보, 연결 통계를 포함한 연결 보고서를 반환합니다.
+"""

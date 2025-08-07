@@ -1,0 +1,52 @@
+description="SSH를 통해 원격 서버에 연결"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_connect, Read, Write]
+description: "SSH를 통해 원격 서버에 연결"
+---
+
+# /ssh:connect - SSH Server Connection
+
+## Purpose
+SSH를 통해 원격 서버에 안전하게 연결하고 세션을 관리합니다.
+
+## Usage
+```
+/ssh:connect [host] [username] [--port 22] [--auth password|key|agent]
+```
+
+## Arguments
+- `host` (필수) - 서버 호스트명 또는 IP 주소
+- `username` (필수) - SSH 사용자명  
+- `--port` - SSH 포트 (기본값: 22)
+- `--auth` - 인증 방식 (password, key, agent)
+- `--privateKey` - 개인키 파일 경로
+- `--passphrase` - 개인키 암호구문
+- `--useAgent` - SSH 에이전트 사용 여부
+
+## Execution
+1. SSH 연결 매개변수 검증 및 준비
+2. 지정된 인증 방식으로 서버 연결 시도
+3. 연결 성공 시 connectionId 생성 및 반환
+4. 연결 정보를 세션에 저장하여 관리
+5. 연결 상태 및 오류 처리
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_connect for secure connection establishment
+- Leverages Read for configuration file processing
+- Applies Write for connection logging and session management
+- Maintains secure credential handling and session tracking
+
+## 예시
+```json
+{
+  "host": "192.168.1.100",
+  "username": "ubuntu",
+  "port": 22,
+  "password": "your_password"
+}
+```
+
+## 반환값
+연결 성공 시 connectionId를 반환합니다.
+"""

@@ -18,7 +18,8 @@
       "Bash(ssh:*)",
       "Bash(icacls:*)",
       "Bash(cp:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "mcp__ssh-mcp__ssh_generate_gemini"
     ],
     "deny": []
   }
