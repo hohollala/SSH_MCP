@@ -280,7 +280,7 @@ DEV_PASSWORD=your_password
 - [README](./README.md) - 모든 명령어 설명
 `,
 
-  'generate-g.md': `# generate-g
+  'ssh-g.md': `# ssh-g
 
 ## 설명
 Gemini CLI용 SSH 명령어 TOML 파일들을 자동으로 생성합니다
@@ -290,16 +290,41 @@ Gemini CLI용 SSH 명령어 TOML 파일들을 자동으로 생성합니다
 
 ## 사용법
 \`\`\`
-/ssh:generate-g [--path ~/.gemini/commands/ssh] [--force]
+/ssh:ssh-g [--path ~/.gemini/commands/ssh] [--force]
 \`\`\`
 
 ## 예시
-- \`/ssh:generate-g\`
-- \`/ssh:generate-g --path /custom/path/ssh\`
-- \`/ssh:generate-g --force\`
+- \`/ssh:ssh-g\`
+- \`/ssh:ssh-g --path /custom/path/ssh\`
+- \`/ssh:ssh-g --force\`
 
 ## 관련 명령어
 - [init](./init.md) - SSH 환경 초기화
+- [ssh-c](./ssh-c.md) - Cursor용 명령어 생성
+- [README](./README.md) - 모든 명령어 설명
+`,
+
+  'ssh-c.md': `# ssh-c
+
+## 설명
+Cursor용 SSH 명령어 MD 파일들을 자동으로 생성합니다
+
+## 카테고리
+도구 관리
+
+## 사용법
+\`\`\`
+/ssh:ssh-c [--path ~/.cursor/rules] [--force]
+\`\`\`
+
+## 예시
+- \`/ssh:ssh-c\`
+- \`/ssh:ssh-c --path /custom/path/cursor\`
+- \`/ssh:ssh-c --force\`
+
+## 관련 명령어
+- [init](./init.md) - SSH 환경 초기화
+- [ssh-g](./ssh-g.md) - Gemini CLI용 명령어 생성
 - [README](./README.md) - 모든 명령어 설명
 `,
 
@@ -309,7 +334,8 @@ SSH MCP 서버의 모든 명령어를 설명합니다.
 
 ## 환경 설정
 - [init](./init.md) - SSH 환경 초기화 (.sshenv 파일 생성)
-- [generate-g](./generate-g.md) - Gemini CLI용 명령어 생성
+- [ssh-g](./ssh-g.md) - Gemini CLI용 명령어 생성
+- [ssh-c](./ssh-c.md) - Cursor용 명령어 생성
 
 ## 연결 관리
 - [connect](./connect.md) - SSH 서버 연결
@@ -349,13 +375,14 @@ SSH MCP 서버의 모든 명령어를 설명합니다.
 - \`ssh_read_file\` → read
 - \`ssh_write_file\` → write
 - \`ssh_list_files\` → list-files
-- \`ssh_generate_gemini\` → generate-g
+- \`ssh_generate_gemini\` → ssh-g
+- \`ssh_generate_cursor\` → ssh-c
 `
 };
 
 // Gemini CLI용 SSH 명령어 템플릿
 export const geminiCommandTemplates = {
-  'connect.toml': `description="SSH를 통해 원격 서버에 연결"
+  'ssh-connect.toml': `description="SSH를 통해 원격 서버에 연결"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_connect, Read, Write]
@@ -409,7 +436,7 @@ SSH를 통해 원격 서버에 안전하게 연결하고 세션을 관리합니�
 """
 `,
 
-  'disconnect.toml': `description="활성화된 SSH 연결을 안전하게 해제"
+  'ssh-disconnect.toml': `description="활성화된 SSH 연결을 안전하게 해제"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_disconnect, Read]
@@ -456,7 +483,7 @@ description: "활성화된 SSH 연결을 안전하게 해제"
 """
 `,
 
-  'list-connections.toml': `description="현재 활성화된 모든 SSH 연결 목록을 조회"
+  'ssh-list-connections.toml': `description="현재 활성화된 모든 SSH 연결 목록을 조회"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_list_connections, Read]
@@ -501,7 +528,7 @@ description: "현재 활성화된 모든 SSH 연결 목록을 조회"
 """
 `,
 
-  'list-files.toml': `description="SSH 연결을 통해 원격 서버의 파일 목록을 조회"
+  'ssh-list-files.toml': `description="SSH 연결을 통해 원격 서버의 파일 목록을 조회"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_list_files, Read]
@@ -548,7 +575,7 @@ SSH 연결을 통해 원격 서버의 디렉토리 파일 목록을 조회합니
 """
 `,
 
-  'exec.toml': `description="SSH 연결을 통해 원격 서버에서 명령을 실행"
+  'ssh-exec.toml': `description="SSH 연결을 통해 원격 서버에서 명령을 실행"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_execute_command, Read, Write]
@@ -598,7 +625,7 @@ SSH 연결을 통해 원격 서버에서 명령을 실행하고 결과를 반환
 """
 `,
 
-  'read.toml': `description="SSH 연결을 통해 원격 서버의 파일을 읽기"
+  'ssh-read.toml': `description="SSH 연결을 통해 원격 서버의 파일을 읽기"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_read_file, Read]
@@ -647,7 +674,7 @@ SSH 연결을 통해 원격 서버의 파일을 안전하게 읽고 내용을 �
 """
 `,
 
-  'write.toml': `description="SSH 연결을 통해 원격 서버에 파일을 쓰기"
+  'ssh-write.toml': `description="SSH 연결을 통해 원격 서버에 파일을 쓰기"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_write_file, Read, Write]
@@ -697,7 +724,7 @@ SSH 연결을 통해 원격 서버에 파일을 안전하게 작성하고 저장
 """
 `,
 
-  'init.toml': `description="SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성"
+  'ssh-init.toml': `description="SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성"
 prompt = """
 ---
 allowed-tools: [mcp__ssh-mcp__ssh_init, Read, Write]
@@ -768,5 +795,408 @@ DEV_PASSWORD=your_password
 - 가능하면 password 대신 SSH 키를 사용하세요
 - 파일 권한을 600으로 설정하세요: \`chmod 600 .sshenv\`
 """
+`,
+
+  'ssh-c.toml': `description="Cursor용 SSH 명령어 MD 파일들을 자동으로 생성"
+prompt = """
+---
+allowed-tools: [mcp__ssh-mcp__ssh_generate_cursor, Read, Write]
+description: "Cursor용 SSH 명령어 MD 파일들을 자동으로 생성"
+---
+
+# /ssh:ssh-c - Cursor SSH Commands Generation
+
+## Purpose
+Cursor용 SSH 명령어 MD 파일들을 자동으로 생성하여 Cursor 규칙 디렉토리에 저장합니다.
+
+## Usage
+\`\`\`
+/ssh:ssh-c [--path ~/.cursor/rules] [--force]
+\`\`\`
+
+## Arguments
+- \`--path\` (선택, 기본값: ~/.cursor/rules) - MD 파일을 생성할 경로
+- \`--force\` (선택) - 기존 파일 덮어쓰기 여부
+
+## Execution
+1. 지정된 경로의 디렉토리 유효성 확인
+2. Cursor용 SSH 명령어 MD 파일 템플릿 로드
+3. 각 명령어별 MD 파일 생성
+4. 파일 생성 결과 및 상태 반환
+
+## Claude Code Integration
+- Uses mcp__ssh-mcp__ssh_generate_cursor for Cursor command generation
+- Leverages Read for template processing
+- Applies Write for MD file creation
+- Maintains proper file organization and structure
+
+## 예시
+\`\`\`json
+{
+  "path": "~/.cursor/rules",
+  "force": false
+}
+\`\`\`
+
+## 반환값
+생성된 MD 파일 목록과 상태 정보를 반환합니다.
+
+## 생성되는 파일들
+- ssh-connect.md, ssh-disconnect.md, ssh-list-connections.md
+- ssh-list-files.md, ssh-exec.md, ssh-read.md
+- ssh-write.md, ssh-init.md
+`
+};
+
+// Cursor용 SSH 명령어 템플릿 (MD 파일)
+export const cursorCommandTemplates = {
+  'ssh-connect.md': `# ssh-connect
+
+## 설명
+SSH를 통해 원격 서버에 안전하게 연결하고 세션을 관리합니다
+
+## 카테고리
+연결 관리
+
+## 사용법
+\`\`\`
+/ssh:connect [host] [username] [--port 22] [--auth password|key|agent]
+\`\`\`
+
+## 매개변수
+- \`host\` (필수) - 서버 호스트명 또는 IP 주소
+- \`username\` (필수) - SSH 사용자명  
+- \`--port\` - SSH 포트 (기본값: 22)
+- \`--auth\` - 인증 방식 (password, key, agent)
+- \`--privateKey\` - 개인키 파일 경로
+- \`--passphrase\` - 개인키 암호구문
+- \`--useAgent\` - SSH 에이전트 사용 여부
+
+## 예시
+- \`/ssh:connect 192.168.1.100 ubuntu\`
+- \`/ssh:connect example.com admin --port 2222\`
+- \`/ssh:connect server.com user --auth key --privateKey ~/.ssh/id_rsa\`
+
+## 반환값
+연결 성공 시 connectionId를 반환합니다.
+
+## 관련 명령어
+- [ssh-disconnect](./ssh-disconnect.md) - SSH 연결 해제
+- [ssh-list-connections](./ssh-list-connections.md) - 연결 목록 조회
+- [ssh-init](./ssh-init.md) - SSH 환경 초기화
+`,
+
+  'ssh-disconnect.md': `# ssh-disconnect
+
+## 설명
+활성화된 SSH 연결을 안전하게 해제하고 리소스를 정리합니다
+
+## 카테고리
+연결 관리
+
+## 사용법
+\`\`\`
+/ssh:disconnect [connectionId] [--all] [--force]
+\`\`\`
+
+## 매개변수
+- \`connectionId\` (필수) - 해제할 연결의 ID
+- \`--all\` - 모든 활성 연결 해제
+- \`--force\` - 강제 연결 해제 (응답 대기 없음)
+
+## 예시
+- \`/ssh:disconnect conn_123456\`
+- \`/ssh:disconnect --all\`
+- \`/ssh:disconnect conn_123456 --force\`
+
+## 반환값
+연결 해제 성공 메시지를 반환합니다.
+
+## 관련 명령어
+- [ssh-connect](./ssh-connect.md) - SSH 서버 연결
+- [ssh-list-connections](./ssh-list-connections.md) - 연결 목록 조회
+`,
+
+  'ssh-list-connections.md': `# ssh-list-connections
+
+## 설명
+현재 활성화된 모든 SSH 연결의 상태와 정보를 조회하고 관리합니다
+
+## 카테고리
+연결 관리
+
+## 사용법
+\`\`\`
+/ssh:list-connections [--status active|inactive|all] [--format table|json]
+\`\`\`
+
+## 매개변수
+- \`--status\` - 연결 상태 필터 (active, inactive, all)
+- \`--format\` - 출력 형식 (table, json)
+- \`--detail\` - 상세 정보 포함 여부
+
+## 예시
+- \`/ssh:list-connections\`
+- \`/ssh:list-connections --status active\`
+- \`/ssh:list-connections --format json --detail\`
+
+## 반환값
+활성 연결 목록, 상태 정보, 연결 통계를 포함한 연결 보고서를 반환합니다.
+
+## 관련 명령어
+- [ssh-connect](./ssh-connect.md) - SSH 서버 연결
+- [ssh-disconnect](./ssh-disconnect.md) - SSH 연결 해제
+`,
+
+  'ssh-list-files.md': `# ssh-list-files
+
+## 설명
+SSH 연결을 통해 원격 서버의 디렉토리 파일 목록을 조회합니다
+
+## 카테고리
+파일 조작
+
+## 사용법
+\`\`\`
+/ssh:list-files [connectionId] [path]
+\`\`\`
+
+## 매개변수
+- \`connectionId\` (필수) - 사용할 연결 ID
+- \`path\` (선택, 기본값: ".") - 조회할 디렉토리 경로
+
+## 예시
+- \`/ssh:list-files conn_123456\`
+- \`/ssh:list-files conn_123456 /home/ubuntu\`
+- \`/ssh:list-files conn_123456 /var/log\`
+
+## 반환값
+디렉토리 파일 목록과 상세 정보를 반환합니다.
+
+## 관련 명령어
+- [ssh-read](./ssh-read.md) - 파일 읽기
+- [ssh-write](./ssh-write.md) - 파일 쓰기
+- [ssh-exec](./ssh-exec.md) - 원격 명령 실행
+`,
+
+  'ssh-exec.md': `# ssh-exec
+
+## 설명
+SSH 연결을 통해 원격 서버에서 명령을 실행하고 결과를 반환합니다
+
+## 카테고리
+명령 실행
+
+## 사용법
+\`\`\`
+/ssh:exec [connectionId] [command] [--cwd path] [--timeout seconds]
+\`\`\`
+
+## 매개변수
+- \`connectionId\` (필수) - 사용할 연결 ID
+- \`command\` (필수) - 실행할 명령어
+- \`--cwd\` (선택) - 작업 디렉토리
+- \`--timeout\` (선택, 기본값: 60) - 타임아웃(초)
+
+## 예시
+- \`/ssh:exec conn_123456 "ls -la"\`
+- \`/ssh:exec conn_123456 "pwd" --cwd /home/ubuntu\`
+- \`/ssh:exec conn_123456 "long-running-command" --timeout 300\`
+
+## 반환값
+명령 실행 결과와 출력을 반환합니다.
+
+## 관련 명령어
+- [ssh-connect](./ssh-connect.md) - SSH 서버 연결
+- [ssh-list-files](./ssh-list-files.md) - 파일 목록 조회
+`,
+
+  'ssh-read.md': `# ssh-read
+
+## 설명
+SSH 연결을 통해 원격 서버의 파일을 안전하게 읽고 내용을 반환합니다
+
+## 카테고리
+파일 조작
+
+## 사용법
+\`\`\`
+/ssh:read [connectionId] [path] [--encoding utf8]
+\`\`\`
+
+## 매개변수
+- \`connectionId\` (필수) - 사용할 연결 ID
+- \`path\` (필수) - 읽을 파일 경로
+- \`--encoding\` (선택, 기본값: utf8) - 파일 인코딩
+
+## 예시
+- \`/ssh:read conn_123456 /home/ubuntu/config.txt\`
+- \`/ssh:read conn_123456 /var/log/app.log --encoding utf8\`
+- \`/ssh:read conn_123456 /etc/hosts\`
+
+## 반환값
+파일 내용을 반환합니다.
+
+## 관련 명령어
+- [ssh-write](./ssh-write.md) - 파일 쓰기
+- [ssh-list-files](./ssh-list-files.md) - 파일 목록 조회
+`,
+
+  'ssh-write.md': `# ssh-write
+
+## 설명
+SSH 연결을 통해 원격 서버에 파일을 안전하게 작성하고 저장합니다
+
+## 카테고리
+파일 조작
+
+## 사용법
+\`\`\`
+/ssh:write [connectionId] [path] [content] [--encoding utf8]
+\`\`\`
+
+## 매개변수
+- \`connectionId\` (필수) - 사용할 연결 ID
+- \`path\` (필수) - 저장할 파일 경로
+- \`content\` (필수) - 파일 내용
+- \`--encoding\` (선택, 기본값: utf8) - 파일 인코딩
+
+## 예시
+- \`/ssh:write conn_123456 /home/ubuntu/output.txt "Hello World!"\`
+- \`/ssh:write conn_123456 /tmp/test.txt "Test content" --encoding utf8\`
+- \`/ssh:write conn_123456 /var/log/custom.log "Log entry"\`
+
+## 반환값
+파일 쓰기 성공 메시지를 반환합니다.
+
+## 관련 명령어
+- [ssh-read](./ssh-read.md) - 파일 읽기
+- [ssh-list-files](./ssh-list-files.md) - 파일 목록 조회
+`,
+
+  'ssh-init.md': `# ssh-init
+
+## 설명
+SSH MCP 환경을 초기화하여 .sshenv 설정 파일을 생성합니다
+
+## 카테고리
+환경 설정
+
+## 사용법
+\`\`\`
+/ssh:init [--path .] [--force] [--addGitignore]
+\`\`\`
+
+## 매개변수
+- \`--path\` (선택, 기본값: ".") - .sshenv 파일을 생성할 경로
+- \`--force\` (선택, 기본값: false) - 기존 파일 덮어쓰기 여부
+- \`--addGitignore\` (선택, 기본값: true) - .gitignore에 .sshenv 추가 여부
+
+## 예시
+- \`/ssh:init\`
+- \`/ssh:init --path /custom/path\`
+- \`/ssh:init --force --addGitignore false\`
+
+## 반환값
+초기화 성공 여부와 생성된 파일 경로를 반환합니다.
+
+## .sshenv 파일 사용법
+생성된 .sshenv 파일에 서버별 환경변수를 설정하고, MCP 명령어에서 \${VAR_NAME} 형태로 참조하세요.
+
+### 예시 설정
+\`\`\`env
+DEV_HOST=192.168.1.100
+DEV_USER=ubuntu
+DEV_PASSWORD=your_password
+\`\`\`
+
+### 예시 사용
+\`\`\`json
+{
+  "host": "\${DEV_HOST}",
+  "username": "\${DEV_USER}",
+  "password": "\${DEV_PASSWORD}"
+}
+\`\`\`
+
+## 보안 주의사항
+- .sshenv 파일을 git에 커밋하지 마세요
+- 가능하면 password 대신 SSH 키를 사용하세요
+- 파일 권한을 600으로 설정하세요: \`chmod 600 .sshenv\`
+
+## 관련 명령어
+- [ssh-connect](./ssh-connect.md) - SSH 서버 연결
+- [ssh-g](./ssh-g.md) - Gemini CLI 명령어 생성
+- [ssh-c](./ssh-c.md) - Cursor용 명령어 생성
+`,
+
+  'ssh-g.md': `# ssh-g
+
+## 설명
+Gemini CLI용 SSH 명령어 TOML 파일들을 자동으로 생성합니다
+
+## 카테고리
+도구 관리
+
+## 사용법
+\`\`\`
+/ssh:ssh-g [--path ~/.gemini/commands/ssh] [--force]
+\`\`\`
+
+## 매개변수
+- \`--path\` (선택, 기본값: ~/.gemini/commands/ssh) - TOML 파일을 생성할 경로
+- \`--force\` (선택) - 기존 파일 덮어쓰기 여부
+
+## 예시
+- \`/ssh:ssh-g\`
+- \`/ssh:ssh-g --path /custom/path/ssh\`
+- \`/ssh:ssh-g --force\`
+
+## 반환값
+생성된 TOML 파일 목록과 상태 정보를 반환합니다.
+
+## 생성되는 파일들
+- ssh-connect.toml, ssh-disconnect.toml, ssh-list-connections.toml
+- ssh-list-files.toml, ssh-exec.toml, ssh-read.toml
+- ssh-write.toml, ssh-init.toml, ssh-c.toml
+
+## 관련 명령어
+- [ssh-init](./ssh-init.md) - SSH 환경 초기화
+- [ssh-c](./ssh-c.md) - Cursor용 명령어 생성
+`,
+
+  'ssh-c.md': `# ssh-c
+
+## 설명
+Cursor용 SSH 명령어 MD 파일들을 자동으로 생성합니다
+
+## 카테고리
+도구 관리
+
+## 사용법
+\`\`\`
+/ssh:ssh-c [--path ~/.cursor/rules] [--force]
+\`\`\`
+
+## 매개변수
+- \`--path\` (선택, 기본값: ~/.cursor/rules) - MD 파일을 생성할 경로
+- \`--force\` (선택) - 기존 파일 덮어쓰기 여부
+
+## 예시
+- \`/ssh:ssh-c\`
+- \`/ssh:ssh-c --path /custom/path/cursor\`
+- \`/ssh:ssh-c --force\`
+
+## 반환값
+생성된 MD 파일 목록과 상태 정보를 반환합니다.
+
+## 생성되는 파일들
+- ssh-connect.md, ssh-disconnect.md, ssh-list-connections.md
+- ssh-list-files.md, ssh-exec.md, ssh-read.md
+- ssh-write.md, ssh-init.md, ssh-g.md
+
+## 관련 명령어
+- [ssh-init](./ssh-init.md) - SSH 환경 초기화
+- [ssh-g](./ssh-g.md) - Gemini CLI용 명령어 생성
 `
 };

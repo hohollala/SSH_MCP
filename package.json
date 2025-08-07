@@ -8,7 +8,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run fix-ssh-g",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
@@ -20,6 +20,9 @@
     "install-commands:force": "node scripts/install-commands.js --force",
     "install-commands:info": "node scripts/install-commands.js --info",
     "uninstall-commands": "node scripts/install-commands.js --uninstall",
+    "ssh-g": "node force-generate-ssh-gemini.js",
+    "ssh-c": "node force-generate-ssh-cursor.js",
+    "fix-ssh-g": "node fix-ssh-g.js",
     "postinstall": "npm run build && npm run install-commands"
   },
   "keywords": [

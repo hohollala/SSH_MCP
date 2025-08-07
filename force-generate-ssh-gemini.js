@@ -5,9 +5,9 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { geminiCommandTemplates } from './dist/command-templates.js';
 
-async function forceGenerateGemini() {
+async function forceGenerateSshGemini() {
   try {
-    console.log('🔧 Gemini CLI SSH 명령어를 강제로 생성합니다...');
+    console.log('🔧 SSH Gemini CLI 명령어를 강제로 생성합니다...');
     
     const targetPath = join(homedir(), '.gemini', 'commands', 'ssh');
     
@@ -17,7 +17,7 @@ async function forceGenerateGemini() {
     
     const generatedFiles = [];
     
-    // 모든 TOML 파일 강제 생성
+    // Gemini CLI용 SSH TOML 파일 강제 생성
     for (const [filename, template] of Object.entries(geminiCommandTemplates)) {
       const filePath = join(targetPath, filename);
       
@@ -30,15 +30,15 @@ async function forceGenerateGemini() {
       }
     }
     
-    console.log(`📊 총 ${generatedFiles.length}개 파일 생성 완료`);
+    console.log(`📊 총 ${generatedFiles.length}개 SSH 파일 생성 완료`);
     console.log(`📋 생성된 파일들: ${generatedFiles.join(', ')}`);
     
     // 생성된 파일 목록 확인
     const files = await fs.readdir(targetPath);
     const tomlFiles = files.filter(file => file.endsWith('.toml'));
-    console.log(`📋 현재 .toml 파일들: ${tomlFiles.join(', ')}`);
+    console.log(`📋 현재 SSH .toml 파일들: ${tomlFiles.join(', ')}`);
     
-    console.log('🎉 Gemini CLI SSH 명령어 생성 완료!');
+    console.log('🎉 SSH Gemini CLI 명령어 생성 완료!');
     
   } catch (error) {
     console.error('❌ 오류 발생:', error);
@@ -46,4 +46,4 @@ async function forceGenerateGemini() {
   }
 }
 
-forceGenerateGemini();
+forceGenerateSshGemini();
