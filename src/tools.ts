@@ -2,7 +2,7 @@ import { createLogger } from './logger.js';
 import { SSHConnectionManager } from './connection-manager.js';
 import { ErrorFactory } from './errors.js';
 import { EnvParser } from './env-parser.js';
-import { sshenvTemplate, gitignoreEntry } from './sshenv-template.js';
+import { sshenvTemplateWithPassphrase, sshenvTemplateWithoutPassphrase, gitignoreEntry } from './sshenv-template.js';
 import { geminiCommandTemplates } from './command-templates.js';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -249,6 +249,11 @@ export class SSHTools {
             type: 'boolean',
             description: 'Add .sshenv entry to .gitignore',
             default: true
+          },
+          includePassphrase: {
+            type: 'boolean',
+            description: 'Include passphrase fields in the template (for encrypted private keys)',
+            default: true
           }
         }
       }
@@ -429,7 +434,7 @@ export class SSHTools {
     gitignoreUpdated?: boolean;
   }> {
     try {
-      const { path = '.', clientPath, force = false, addGitignore = true } = args;
+      const { path = '.', clientPath, force = false, addGitignore = true, includePassphrase = true } = args;
       
       // Determine the actual path to use
       const actualPath = clientPath || path;
@@ -460,8 +465,9 @@ export class SSHTools {
       
       // Write .sshenv file
       try {
-        await fs.writeFile(sshenvPath, sshenvTemplate, 'utf8');
-        this.logger.info(`Created .sshenv file at: ${sshenvPath}`);
+        const template = includePassphrase ? sshenvTemplateWithPassphrase : sshenvTemplateWithoutPassphrase;
+        await fs.writeFile(sshenvPath, template, 'utf8');
+        this.logger.info(`Created .sshenv file at: ${sshenvPath} (passphrase: ${includePassphrase ? 'included' : 'excluded'})`);
       } catch (error) {
         this.logger.error(`Failed to write .sshenv file: ${sshenvPath}`, error);
         return {

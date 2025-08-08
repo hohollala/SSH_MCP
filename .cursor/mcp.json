@@ -2,7 +2,7 @@
   "mcpServers": {
     "ssh-mcp": {
       "command": "node",
-      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js", "--stdin"],
+      "args": ["E:\\MCPProjects\\SSH_MCP\\dist\\index.js", "--stdio"],
       "env": {
         "SSH_MCP_DEBUG": "true",
         "SSH_MCP_TIMEOUT": "30",
